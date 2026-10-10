@@ -39,3 +39,4 @@ coverage.txt
 # 数据
 logs/
 mysql_data/
+data/

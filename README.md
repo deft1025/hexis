@@ -52,10 +52,20 @@ mysql -uroot -p < sql/002_queries.sql
 
 配置好 `.env`，准备 JSON 数组，然后执行：
 
+仓库内提供了一套用于联调的轻量种子数据，位于 `data/`。它只包含少量资料，不包含真实统计数据；正式上线前应替换为已授权的数据。
+
 ```bash
 go run ./cmd/importer import --patch 15.21 --kind champions --file ./champions.json
 go run ./cmd/importer import --patch 15.21 --kind augments --file ./augments.json
 go run ./cmd/importer import --patch 15.21 --kind combos --file ./combos.json
+go run ./cmd/importer publish --patch 15.21
+```
+
+使用仓库内种子数据时，可直接执行：
+
+```bash
+go run ./cmd/importer import --patch 15.21 --kind champions --file ./data/champions.json --source "Riot Data Dragon" --source-url "https://developer.riotgames.com/docs/lol#data-dragon"
+go run ./cmd/importer import --patch 15.21 --kind augments --file ./data/augments.json --source "MVP seed data" --source-attribution "Replace before production"
 go run ./cmd/importer publish --patch 15.21
 ```
 

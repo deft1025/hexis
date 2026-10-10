@@ -16,6 +16,7 @@ WORKDIR /app
 COPY --from=builder /build/api .
 COPY --from=builder /build/.env.example ./.env
 COPY --from=builder /build/sql ./sql
+COPY --from=builder /build/data ./data
 COPY --from=builder /build/internal/web/static ./internal/web/static
 
 EXPOSE 8182
