@@ -25,6 +25,11 @@ func TestStaticContentType(t *testing.T) {
 		content string
 	}{
 		{"/", "text/html"},
+		{"/champions.html", "text/html"},
+		{"/champion.html", "text/html"},
+		{"/augments.html", "text/html"},
+		{"/items.html", "text/html"},
+		{"/combos.html", "text/html"},
 		{"/app.css", "text/css"},
 		{"/app.js", "javascript"},
 	} {
