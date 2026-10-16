@@ -4,22 +4,6 @@ const escapeHTML = (value) => String(value ?? '').replace(/[&<>"']/g, (character
 const percent = (value) => value == null ? '暂无数据' : `${(value * 100).toFixed(1)}%`;
 const number = (value) => Number(value || 0).toLocaleString('zh-CN');
 const rarityNames = { Silver: '白银', Gold: '黄金', Prismatic: '棱彩' };
-const augmentIcons = {
-  '珠光护手': 'jeweledgauntlet', '法术回响': 'spellwake', '巨人杀手': 'giantslayer',
-  '不可触碰': 'canttouchthis', '灵能使者': 'mindtomatter', '大法师': 'bigbrain',
-  '利刃华尔兹': 'bladewaltz', '极速': 'withhaste', '缩小术': 'eureka', '坚韧不倒': 'outlawsgrit'
-};
-const itemCatalog = [
-  ['3031', '无尽之刃', '暴击伤害', '攻击', 3450], ['3078', '三相之力', '全面提升攻击能力', '攻击', 3333],
-  ['3094', '疾射火炮', '充能攻击与攻击距离', '攻击', 2650], ['3142', '幽梦之灵', '主动提升移动速度', '攻击', 2800],
-  ['3161', '朔极之矛', '提升技能伤害', '攻击', 3100], ['3046', '幻影之舞', '攻击速度与移动速度', '攻击', 2650],
-  ['3508', '夺萃之镰', '暴击与技能急速', '攻击', 2900], ['3089', '灭世者的死亡之帽', '巨幅提升法术强度', '法术', 3500],
-  ['3157', '中娅沙漏', '主动进入凝滞状态', '法术', 3250], ['3135', '虚空之杖', '提升魔法穿透', '法术', 3000],
-  ['3116', '瑞莱的冰晶节杖', '技能使敌人减速', '法术', 2600], ['3102', '女妖面纱', '周期性阻挡敌方技能', '法术', 3000],
-  ['3083', '狂徒铠甲', '大量生命值与生命回复', '防御', 3100], ['3026', '守护天使', '阵亡后复活', '防御', 3200],
-  ['3075', '荆棘之甲', '护甲与重伤效果', '防御', 2450], ['3084', '心之钢', '持续提升生命值', '防御', 3000],
-  ['3190', '钢铁烈阳之匣', '为队友提供护盾', '功能', 2200], ['2065', '舒瑞娅的战歌', '为队友提供移动速度', '功能', 2200]
-].map(([id, name_zh, description, category, price]) => ({ id, name_zh, description, category, price, icon_url: `https://ddragon.leagueoflegends.com/cdn/15.21.1/img/item/${id}.png`, stats: null }));
 
 async function api(path) {
   const response = await fetch(path);
@@ -51,12 +35,10 @@ function sourceMarkup(source) {
 
 function iconMarkup(item) {
   let iconURL = item.icon_url;
-  if (!iconURL && ['champions', 'champion'].includes(page)) iconURL = `https://ddragon.leagueoflegends.com/cdn/15.21.1/img/champion/${encodeURIComponent(item.id)}.png`;
-  if (!iconURL && page === 'augments' && augmentIcons[item.name_zh]) iconURL = `https://raw.communitydragon.org/latest/game/assets/ux/cherry/augments/icons/${augmentIcons[item.name_zh]}_small.png`;
   if (!iconURL) return '<span class="entity-icon icon-fallback" aria-hidden="true">✦</span>';
   try {
-    const url = new URL(iconURL);
-    if (!['http:', 'https:'].includes(url.protocol)) throw new Error('invalid icon URL');
+    const url = new URL(iconURL,location.origin);
+    if (url.protocol !== 'https:' || !['ddragon.leagueoflegends.com', 'raw.communitydragon.org'].includes(url.hostname)) throw new Error('invalid icon URL');
     return `<img class="entity-icon" src="${escapeHTML(url.href)}" alt="" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="entity-icon icon-fallback" aria-hidden="true" hidden>✦</span>`;
   } catch { return '<span class="entity-icon icon-fallback" aria-hidden="true">✦</span>'; }
 }
@@ -71,11 +53,12 @@ function championMarkup(item, index) {
 
 function augmentMarkup(item, index) {
   const stats = item.stats || {};
-  return `<div class="ranking-row">${rankMarkup(index)}<span class="entity-cell">${iconMarkup(item)}<span><strong>${escapeHTML(item.name_zh)}</strong><small>${escapeHTML(item.description || item.name_en || '暂无效果描述')}</small></span></span><span class="rate-cell">${rateMarkup(stats.win_rate)}</span><span>${percent(stats.pick_rate)}</span><span class="rarity rarity-${escapeHTML(item.rarity || 'unknown')}">${escapeHTML(rarityNames[item.rarity] || item.rarity || '未分级')}</span></div>`;
+  return `<div class="ranking-row" data-rarity="${escapeHTML(item.rarity || 'unknown')}">${rankMarkup(index)}<span class="entity-cell">${iconMarkup(item)}<span><strong>${escapeHTML(item.name_zh)}</strong><small>${escapeHTML(item.description || item.name_en || '暂无效果描述')}</small></span></span><span class="rate-cell">${rateMarkup(stats.win_rate)}</span><span>${percent(stats.pick_rate)}</span><span class="rarity rarity-${escapeHTML(item.rarity || 'unknown')}">${escapeHTML(rarityNames[item.rarity] || item.rarity || '未分级')}</span></div>`;
 }
 
 function itemMarkup(item, index) {
-  return `<div class="ranking-row">${rankMarkup(index)}<span class="entity-cell">${iconMarkup(item)}<span><strong>${escapeHTML(item.name_zh)}</strong></span></span><span>${escapeHTML(item.category)}</span><span>${number(item.price)}</span><span class="item-effect">${escapeHTML(item.description)}</span></div>`;
+  const categories = (item.categories || []).join(' · ');
+  return `<div class="ranking-row">${rankMarkup(index)}<span class="entity-cell">${iconMarkup(item)}<span><strong>${escapeHTML(item.name_zh)}</strong><small class="item-mobile-category">${escapeHTML(categories)}</small></span></span><span class="item-category">${escapeHTML(categories)}</span><span class="item-price">${number(item.price)}</span><span class="item-effect">${escapeHTML(item.description)}${item.required_champion ? `<small>专属英雄：${escapeHTML(item.required_champion)}</small>` : ''}</span></div>`;
 }
 
 function comboMarkup(item) {
@@ -89,92 +72,135 @@ function setupList() {
   const endpoint = `/api/v1/${page}`;
   const list = $('#list');
   const status = $('#list-status');
-  const more = $('#load-more');
+  const retry = $('#load-more');
   const search = $('#search');
   const sort = $('#sort');
   const rarity = $('#rarity');
+  const category = $('#category');
   const rarityTabs = [...document.querySelectorAll('[data-rarity]')];
-  const pageSize = 100;
+  const pagers = ['上方分页', '下方分页'].map((label) => {
+    const pager = document.createElement('nav');
+    pager.className = 'pagination';
+    pager.setAttribute('aria-label', label);
+    pager.hidden = true;
+    return pager;
+  });
+  status.after(pagers[0]);
+  retry.before(pagers[1]);
+  const initialPage = Number(new URLSearchParams(location.search).get('page'));
+  let currentPage = Number.isSafeInteger(initialPage) && initialPage > 0 ? initialPage : 1;
+  let pageSize = 20;
   let items = [];
-  let hasMore = false;
   let loading = false;
+  let loaded = false;
   let selectedRarity = '';
 
-  function render() {
+  function render(scroll = false) {
+    if (!loaded) return;
     const query = search.value.trim().toLocaleLowerCase();
     let visible = items.filter((item) => {
       if (page === 'combos') return (item.champions || []).some((champion) => `${champion.name_zh} ${champion.id}`.toLocaleLowerCase().includes(query));
-      const text = `${item.name_zh} ${item.name_en || ''} ${item.id} ${page === 'augments' ? item.description || '' : ''}`;
-      return text.toLocaleLowerCase().includes(query) && (!rarity || !rarity.value || item.rarity === rarity.value) && (!selectedRarity || item.rarity === selectedRarity);
+      const text = `${item.name_zh} ${item.name_en || ''} ${item.id} ${['augments', 'items'].includes(page) ? item.description || '' : ''}`;
+      return text.toLocaleLowerCase().includes(query) && (!rarity || !rarity.value || item.rarity === rarity.value) && (!selectedRarity || item.rarity === selectedRarity) && (!category?.value || item.categories?.includes(category.value));
     });
     if (sort?.value === 'win') visible.sort((first, second) => (second.stats?.win_rate ?? second.win_rate ?? -1) - (first.stats?.win_rate ?? first.win_rate ?? -1));
     if (sort?.value === 'pick') visible.sort((first, second) => (second.stats?.pick_rate ?? second.pick_rate ?? -1) - (first.stats?.pick_rate ?? first.pick_rate ?? -1));
+    if (sort?.value === 'samples') visible.sort((first, second) => second.sample_count - first.sample_count);
+    if (sort?.value === 'price') visible.sort((first, second) => first.price - second.price);
     if (sort?.value === 'name') visible.sort((first, second) => first.name_zh.localeCompare(second.name_zh, 'zh-CN'));
-    list.innerHTML = visible.map(page === 'champions' ? championMarkup : page === 'augments' ? augmentMarkup : comboMarkup).join('');
+    const pageCount = Math.max(1, Math.ceil(visible.length / pageSize));
+    currentPage = Math.min(currentPage, pageCount);
+    const start = (currentPage - 1) * pageSize;
+    const markup = page === 'champions' ? championMarkup : page === 'augments' ? augmentMarkup : page === 'items' ? itemMarkup : comboMarkup;
+    list.innerHTML = visible.slice(start, start + pageSize).map((item, index) => markup(item, start + index)).join('');
     if (page !== 'combos') {
-      $('#hero-count').textContent = `${items.length}${hasMore ? '+' : ''} ${page === 'champions' ? '位英雄' : '个符文'}`;
-      const leader = items.filter((item) => item.stats?.win_rate != null).sort((first, second) => second.stats.win_rate - first.stats.win_rate)[0];
-      $('#leader').innerHTML = leader ? `<small>当前已加载胜率领先</small><strong>${percent(leader.stats.win_rate)}</strong><span>${escapeHTML(leader.name_zh)}</span>` : '<small>当前已加载胜率领先</small><strong>—</strong><span>暂无统计数据</span>';
+      $('#hero-count').textContent = `${items.length} ${page === 'champions' ? '位英雄' : page === 'items' ? '件装备' : '个符文'}`;
     }
-    if (!loading) status.textContent = items.length ? `显示 ${visible.length} 条 · 已加载 ${items.length} 条${hasMore ? '，可继续加载' : ''}` : '暂无数据';
-    if (!visible.length && items.length) list.innerHTML = '<p class="empty-state">没有匹配的结果，请调整搜索条件。</p>';
+    if (['champions', 'augments'].includes(page)) {
+      const leader = items.filter((item) => item.stats?.win_rate != null).sort((first, second) => second.stats.win_rate - first.stats.win_rate)[0];
+      $('#leader').innerHTML = leader ? `<small>当前版本胜率领先</small><strong>${percent(leader.stats.win_rate)}</strong><span>${escapeHTML(leader.name_zh)}</span>` : '<small>当前版本胜率领先</small><strong>—</strong><span>暂无统计数据</span>';
+    }
+    status.textContent = visible.length ? `共 ${visible.length} 条 · 显示 ${start + 1}–${Math.min(start + pageSize, visible.length)} 条` : items.length ? '没有匹配的结果' : '暂无数据';
+    if (!visible.length) list.innerHTML = `<p class="empty-state">${items.length ? '没有匹配的结果，请调整搜索条件。' : '当前版本暂无数据。'}</p>`;
+    const url = new URL(location.href);
+    if (currentPage === 1) url.searchParams.delete('page');
+    else url.searchParams.set('page', currentPage);
+    history.replaceState(null, '', url);
+    const pageNumbers = new Set([1, pageCount]);
+    for (let index = Math.max(1, currentPage - 1); index <= Math.min(pageCount, currentPage + 1); index++) pageNumbers.add(index);
+    let lastPage = 0;
+    const pages = [...pageNumbers].sort((a, b) => a - b).map((index) => {
+      const gap = lastPage && index > lastPage + 1 ? '<span class="pagination-gap" aria-hidden="true">…</span>' : '';
+      lastPage = index;
+      return `${gap}<button type="button" data-page-number="${index}" aria-label="第 ${index} 页"${index === currentPage ? ' aria-current="page"' : ''}>${index}</button>`;
+    }).join('');
+    pagers.forEach((pager, index) => {
+      pager.hidden = !visible.length;
+      pager.innerHTML = `<label class="page-size" for="page-size-${index}">每页 <select id="page-size-${index}">${[20, 50, 100].map((size) => `<option value="${size}"${size === pageSize ? ' selected' : ''}>${size} 条</option>`).join('')}</select></label><div class="page-buttons"><button type="button" data-page-number="${currentPage - 1}" aria-label="上一页" title="上一页"${currentPage === 1 ? ' disabled' : ''}><img src="/icons/chevron-left.svg" alt="" width="18" height="18"></button>${pages}<button type="button" data-page-number="${currentPage + 1}" aria-label="下一页" title="下一页"${currentPage === pageCount ? ' disabled' : ''}><img src="/icons/chevron-right.svg" alt="" width="18" height="18"></button></div><span class="page-summary">${currentPage} / ${pageCount} 页</span>`;
+    });
+    if (scroll) pagers[0].scrollIntoView({ block: 'start' });
   }
 
-  async function loadMore() {
+  async function loadItems() {
     if (loading) return;
     loading = true;
-    more.disabled = true;
+    retry.hidden = true;
     status.textContent = '加载中…';
-    let failed = false;
     try {
-      const result = await api(`${endpoint}?limit=${pageSize}&offset=${items.length}`);
-      const batch = result.items || [];
-      items = items.concat(batch);
-      hasMore = batch.length === pageSize;
-      more.hidden = !hasMore;
+      const records = [];
+      let patch = '';
+      // Load this small versioned catalog once so filtering and sorting apply
+      // to every record, including records beyond the current display page.
+      while (true) {
+        const params = new URLSearchParams({ limit: '100', offset: String(records.length) });
+        if (patch) params.set('patch', patch);
+        const result = await api(`${endpoint}?${params}`);
+        patch = result.patch;
+        const batch = result.items || [];
+        records.push(...batch);
+        if (batch.length < 100) break;
+      }
+      items = records;
+      loaded = true;
       render();
     } catch (error) {
-      failed = true;
       status.textContent = error.message;
-      more.hidden = false;
-      more.textContent = '重试加载';
+      retry.hidden = false;
+      retry.textContent = '重试加载';
     } finally {
       loading = false;
-      more.disabled = false;
-      if (!failed) {
-        more.textContent = '加载更多';
-        render();
-      }
     }
   }
 
-  search.addEventListener('input', render);
-  sort?.addEventListener('change', render);
-  rarity?.addEventListener('change', render);
+  const resetPage = () => {
+    currentPage = 1;
+    render();
+  };
+  search.addEventListener('input', resetPage);
+  sort?.addEventListener('change', resetPage);
+  rarity?.addEventListener('change', resetPage);
+  category?.addEventListener('change', resetPage);
   rarityTabs.forEach((tab) => tab.addEventListener('click', () => {
     selectedRarity = tab.dataset.rarity;
     rarityTabs.forEach((button) => button.classList.toggle('active', button === tab));
-    render();
+    resetPage();
   }));
-  more.addEventListener('click', loadMore);
-  loadMore();
-}
-
-function setupItems() {
-  const list = $('#list');
-  const status = $('#list-status');
-  const search = $('#search');
-  const category = $('#category');
-  $('#hero-count').textContent = `${itemCatalog.length} 件装备`;
-  function render() {
-    const query = search.value.trim().toLocaleLowerCase();
-    const visible = itemCatalog.filter((item) => `${item.name_zh} ${item.description} ${item.id}`.toLocaleLowerCase().includes(query) && (!category.value || item.category === category.value));
-    list.innerHTML = visible.map(itemMarkup).join('') || '<p class="empty-state">没有匹配的装备。</p>';
-    status.textContent = `显示 ${visible.length} 件装备 · 表现统计待接入`;
-  }
-  search.addEventListener('input', render);
-  category.addEventListener('change', render);
-  render();
+  pagers.forEach((pager) => {
+    pager.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-page-number]');
+      if (!button || button.disabled) return;
+      currentPage = Number(button.dataset.pageNumber);
+      render(true);
+    });
+    pager.addEventListener('change', (event) => {
+      if (!event.target.matches('select')) return;
+      pageSize = Number(event.target.value);
+      currentPage = 1;
+      render(true);
+    });
+  });
+  retry.addEventListener('click', loadItems);
+  loadItems();
 }
 
 async function loadChampion() {
@@ -193,6 +219,5 @@ async function loadChampion() {
 }
 
 loadPatch();
-if (['champions', 'augments', 'combos'].includes(page)) setupList();
-if (page === 'items') setupItems();
+if (['champions', 'augments', 'combos', 'items'].includes(page)) setupList();
 if (page === 'champion') loadChampion();

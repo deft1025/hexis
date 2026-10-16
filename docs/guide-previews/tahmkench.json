@@ -1,0 +1,92 @@
+[
+  {
+    "id": "sample-tahm-ethereal",
+    "title": "塔姆：虚幻武器特效流",
+    "category": "fun",
+    "playstyle_name": "虚幻武器特效流",
+    "summary": "让技能也能触发攻击特效，搭配黄昏与黎明尝试更快叠出被动，装备兼顾生命值和法术伤害。",
+    "champion_ids": ["TahmKench"],
+    "tags": ["攻击特效", "生命值"],
+    "core_augment_ids": ["ARAM_EtherealWeapon"],
+    "alternative_augment_ids": [],
+    "recommendations": [
+      {"id": "ARAM_EtherealWeapon", "priority": "core", "reason": "让技能触发攻击特效，是这套玩法的关键。配上黄昏与黎明，可以尝试用技能更快叠出被动。"}
+    ],
+    "stages": [
+      {"label": "装备候选（非购买顺序）", "item_ids": ["3084", "2510", "4633", "3083", "4645", "3089"], "reason": "黄昏与黎明用于特效联动，其余装备覆盖生命值和法术输出方向。这里展示候选清单，具体购买顺序待补充。"}
+    ],
+    "sections": [
+      {"title": "玩法思路", "body": "核心是虚幻武器与黄昏与黎明的配合：让技能参与攻击特效触发，尝试加快被动叠层，再衔接塔姆的控制。"},
+      {"title": "版本提示", "body": "Q 与黄昏与黎明的叠层交互尚未完成当前国服实测，不能保证一次 Q 就能叠满三层。"}
+    ],
+    "basic_sections": [
+      {"title": "先凑齐核心组合", "body": "这套联动需要虚幻武器，黄昏与黎明则是配套的特效装备。拿到组合后，再尝试技能叠层的打法。"},
+      {"title": "看清层数再接控制", "body": "衔接吞入前，先看目标身上的被动标记。不要默认装备齐了，一次 Q 就一定能打满三层。"}
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "sample-tahm-basic",
+    "title": "塔姆：被动层数与控制衔接",
+    "category": "basic",
+    "summary": "留意目标的被动层数，三层后可尝试 Q 接 R 的控制衔接。",
+    "champion_ids": ["TahmKench"],
+    "tags": ["通用基础", "被动层数"],
+    "core_augment_ids": [],
+    "alternative_augment_ids": [],
+    "recommendations": [],
+    "stages": [],
+    "sections": [
+      {"title": "控制衔接", "body": "目标已有三层被动时，可以尝试 Q 接 R 的远距离吞入。先确认层数，再练习命中后的施放时机。"},
+      {"title": "版本提示", "body": "Q 接 R 的具体条件，以及体型变化对 Q 射程的影响，仍待当前国服核对；暂不提供固定射程结论。"}
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "sample-tahm-health-ap",
+    "title": "塔姆：霸王血铠转法强",
+    "category": "fun",
+    "playstyle_name": "霸王血铠转法强",
+    "summary": "霸王血铠配合物理转魔法，尝试让生命值通过攻击力转换为法强。",
+    "champion_ids": ["TahmKench"],
+    "tags": ["生命值转换", "法术强度"],
+    "core_augment_ids": ["ARAM_ADAPt"],
+    "alternative_augment_ids": [],
+    "recommendations": [
+      {"id": "ARAM_ADAPt", "priority": "core", "reason": "霸王血铠提供生命值转攻击力的收益，物理转魔法再接上攻击力转法强的环节，组成这套玩法的转换链。"}
+    ],
+    "stages": [
+      {"label": "关键装备", "item_ids": ["2501"], "reason": "霸王血铠是这组转换联动的关键装备，完整出装和购买顺序待补充。"}
+    ],
+    "basic_sections": [
+      {"title": "组合条件", "body": "这套玩法需要同时具备物理转魔法和霸王血铠。只有生命值装备，还没有凑齐完整的转换链。"},
+      {"title": "关注属性变化", "body": "看点在于生命值、攻击力和法强之间的转换。拿到组合后，可以对照属性面板观察实际收益。"}
+    ],
+    "sections": [
+      {"title": "版本提示", "body": "属性转换的比例、计算顺序和最终收益仍待当前国服实测。这是一组条件联动，完整出装待补充。"}
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "sample-tahm-first-aid",
+    "title": "塔姆：急救用具恢复流",
+    "category": "fun",
+    "playstyle_name": "急救用具恢复流",
+    "summary": "用急救用具强化 Q、E 的恢复和 E 的主动护盾，走回复与护盾方向。",
+    "champion_ids": ["TahmKench"],
+    "tags": ["恢复", "护盾"],
+    "core_augment_ids": ["ARAM_FirstAidKit"],
+    "alternative_augment_ids": [],
+    "recommendations": [
+      {"id": "ARAM_FirstAidKit", "priority": "core", "reason": "治疗与护盾强度契合塔姆的恢复和护盾能力，可以围绕 Q、E 的回血以及 E 的主动护盾尝试这组联动。"}
+    ],
+    "stages": [],
+    "basic_sections": [
+      {"title": "关注回血与护盾", "body": "这条路线围绕 Q、E 的恢复和 E 的主动护盾展开。急救用具提供治疗与护盾强度，适合沿这个方向尝试搭配。"}
+    ],
+    "sections": [
+      {"title": "版本提示", "body": "Q、E 的具体加成方式与实际收益仍待当前国服核对，配套装备和施放节奏待补充。"}
+    ],
+    "reviewed": false
+  }
+]

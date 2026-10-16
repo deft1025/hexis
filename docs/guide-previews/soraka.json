@@ -1,0 +1,31 @@
+[
+  {
+    "id": "sample-soraka-spirit-bomb",
+    "title": "索拉卡：灵魄炸弹治疗流",
+    "category": "fun",
+    "playstyle_name": "灵魄炸弹治疗流",
+    "summary": "治疗队友时积攒灵魄炸弹，装备兼顾技能急速、治疗强度和法强。",
+    "champion_ids": ["Soraka"],
+    "tags": ["队友治疗", "治疗强度"],
+    "core_augment_ids": ["ARAM_SpiritBomb"],
+    "alternative_augment_ids": ["ARAM_FirstAidKit", "ARAM_CircleofDeath"],
+    "recommendations": [
+      {"id": "ARAM_SpiritBomb", "priority": "core", "reason": "给队友治疗时积攒效果，让治疗过程同时为下一次灵魄炸弹做准备。"},
+      {"id": "ARAM_FirstAidKit", "priority": "alternative", "reason": "治疗强度与索拉卡的队友治疗能力契合，是强化回复的备选方向。"},
+      {"id": "ARAM_CircleofDeath", "priority": "situational", "reason": "可以尝试让治疗队友的过程带出额外伤害，作为治疗转伤害的另一种搭配方向。"}
+    ],
+    "stages": [
+      {"label": "治疗流装备候选（非购买顺序）", "item_ids": ["6617", "6620", "2526", "3089", "3003", "6621"], "reason": "围绕技能急速、治疗强度和法强选择装备，完整购买顺序与替换条件待补充。"}
+    ],
+    "basic_sections": [
+      {"title": "属性与锻体", "body": "装备兼顾技能急速、治疗强度与法强。锻体优先考虑技能急速，其次是治疗强度和法强。"}
+    ],
+    "sections": [
+      {"title": "版本提示", "body": "灵魄炸弹与死亡之环的具体触发、范围和收益，以及这套属性优先级，仍待当前国服实测。"}
+    ],
+    "references": [
+      {"name": "海斗小助手：急救用具适配英雄", "url": "https://lolhaidou.cn/augment/firstaidkit.html", "note": "急救用具与索拉卡的适配参考。"}
+    ],
+    "reviewed": false
+  }
+]

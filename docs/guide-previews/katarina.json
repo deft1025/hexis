@@ -1,0 +1,25 @@
+[
+  {
+    "id": "sample-katarina-ethereal",
+    "title": "卡特琳娜：虚幻武器与旋转技能",
+    "category": "fun",
+    "playstyle_name": "虚幻武器旋转联动",
+    "summary": "虚幻武器关注大招的攻击特效联动，旋转至胜则围绕被动和 R 的旋转输出展开。",
+    "champion_ids": ["Katarina"],
+    "tags": ["技能特效", "旋转技能"],
+    "core_augment_ids": ["ARAM_EtherealWeapon"],
+    "alternative_augment_ids": ["ARAM_SpinToWin"],
+    "recommendations": [
+      {"id": "ARAM_EtherealWeapon", "priority": "core", "reason": "可围绕 R 与攻击特效的交互尝试搭配，是这套玩法关注的主要联动。"},
+      {"id": "ARAM_SpinToWin", "priority": "alternative", "reason": "被动旋转和 R 都是值得关注的加成对象。它提供另一种旋转输出方向，可以单独考虑。"}
+    ],
+    "stages": [],
+    "basic_sections": [
+      {"title": "选择联动方向", "body": "拿虚幻武器时，关注 R 的攻击特效交互；拿旋转至胜时，关注被动和 R 的旋转加成。两者可以分别考虑，不必凑齐才尝试。"}
+    ],
+    "sections": [
+      {"title": "版本提示", "body": "R 的特效交互、被动与 R 的加成范围尚待当前国服实测，暂不提供固定伤害倍率。配套装备和操作顺序待补充。"}
+    ],
+    "reviewed": false
+  }
+]

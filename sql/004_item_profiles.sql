@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS item_patch_profiles (
+    patch_id BIGINT UNSIGNED NOT NULL,
+    item_id BIGINT UNSIGNED NOT NULL,
+    mode VARCHAR(30) NOT NULL DEFAULT 'KIWI',
+    name_zh VARCHAR(200) NOT NULL,
+    description TEXT NOT NULL,
+    icon_url VARCHAR(500) NOT NULL,
+    categories JSON NOT NULL,
+    price INT UNSIGNED NOT NULL,
+    sell_price INT UNSIGNED NOT NULL,
+    purchasable BOOLEAN NOT NULL,
+    recipe JSON NOT NULL,
+    stats JSON NOT NULL,
+    required_champion VARCHAR(64) NULL,
+    source_id BIGINT UNSIGNED NOT NULL,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (patch_id, item_id, mode),
+    CONSTRAINT fk_item_profiles_patch FOREIGN KEY (patch_id) REFERENCES patches(id),
+    CONSTRAINT fk_item_profiles_item FOREIGN KEY (item_id) REFERENCES items(id),
+    CONSTRAINT fk_item_profiles_source FOREIGN KEY (source_id) REFERENCES data_sources(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

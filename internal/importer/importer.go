@@ -26,7 +26,7 @@ func Import(ctx context.Context, db *sql.DB, options Options) (int, error) {
 	if options.Patch == "" || options.Source == "" {
 		return 0, fmt.Errorf("patch and source are required")
 	}
-	if options.Kind != "champions" && options.Kind != "augments" && options.Kind != "combos" {
+	if options.Kind != "champions" && options.Kind != "augments" && options.Kind != "combos" && options.Kind != "items" && options.Kind != "guides" && options.Kind != "guide-previews" && options.Kind != "skills" {
 		return 0, fmt.Errorf("unsupported kind %q", options.Kind)
 	}
 	var raw any
@@ -63,7 +63,21 @@ func Import(ctx context.Context, db *sql.DB, options Options) (int, error) {
 	if err := tx.QueryRowContext(ctx, `SELECT status FROM patches WHERE id = ? FOR UPDATE`, patchID).Scan(&status); err != nil {
 		return 0, err
 	}
-	if status != "collecting" && status != "draft" {
+	if status == "published" && (options.Kind == "guides" || options.Kind == "guide-previews") {
+		// Editorial content can evolve independently of static snapshots.
+	} else if status == "published" && (options.Kind == "items" || options.Kind == "skills") {
+		var count int
+		table := "item_patch_profiles"
+		if options.Kind == "skills" {
+			table = "champion_patch_skills"
+		}
+		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM `+table+` WHERE patch_id = ?`, patchID).Scan(&count); err != nil {
+			return 0, err
+		}
+		if count > 0 {
+			return 0, fmt.Errorf("published patch %s already has %s and cannot be overwritten", options.Patch, table)
+		}
+	} else if status != "collecting" && status != "draft" {
 		return 0, fmt.Errorf("patch %s is %s and cannot be imported", options.Patch, status)
 	}
 
@@ -85,6 +99,23 @@ func Import(ctx context.Context, db *sql.DB, options Options) (int, error) {
 		return 0, err
 	}
 	count := 0
+	if options.Kind == "skills" {
+		var expected int
+		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM champion_patch_profiles WHERE patch_id=?`, patchID).Scan(&expected); err != nil {
+			return 0, err
+		}
+		seen := make(map[string]bool)
+		for _, record := range records {
+			id := stringValue(record, "id")
+			if id == "" || seen[id] {
+				return 0, fmt.Errorf("duplicate or empty skill champion ID")
+			}
+			seen[id] = true
+		}
+		if expected != len(records) {
+			return 0, fmt.Errorf("skills import must cover all %d heroes in this patch", expected)
+		}
+	}
 	for _, record := range records {
 		if err := importRecord(ctx, tx, patchID, sourceID, options.Kind, record); err != nil {
 			return 0, err
@@ -122,6 +153,18 @@ func records(raw any) ([]map[string]any, error) {
 }
 
 func importRecord(ctx context.Context, tx *sql.Tx, patchID, sourceID int64, kind string, record map[string]any) error {
+	if kind == "guide-previews" {
+		return importGuideContent(ctx, tx, patchID, sourceID, record, true)
+	}
+	if kind == "skills" {
+		return importSkills(ctx, tx, patchID, sourceID, record)
+	}
+	if kind == "guides" {
+		return importGuide(ctx, tx, patchID, sourceID, record)
+	}
+	if kind == "items" {
+		return importItem(ctx, tx, patchID, sourceID, record)
+	}
 	if err := validateStats(record); err != nil {
 		return err
 	}

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "replace-with-guide-key",
+    "title": "替换为已审核的玩法名称",
+    "category": "fun",
+    "playstyle_name": "替换为流派简称",
+    "summary": "说明核心联动和适用场景。此文件仅为录入结构模板，不是可发布的玩法。",
+    "champion_ids": ["替换为英雄 ID"],
+    "tags": ["玩法定位"],
+    "core_augment_ids": ["替换为核心海克斯 ID"],
+    "alternative_augment_ids": ["替换为备选海克斯 ID"],
+    "recommendations": [
+      { "id": "替换为海克斯 ID", "priority": "core", "reason": "说明英雄技能如何触发该效果，以及限制条件。" }
+    ],
+    "stages": [
+      { "label": "起手", "item_ids": ["替换为装备 ID"], "reason": "说明起手选择的理由。" },
+      { "label": "核心", "item_ids": ["替换为装备 ID"], "reason": "说明核心出装顺序和联动。" },
+      { "label": "按局势替换", "item_ids": ["替换为装备 ID"], "reason": "说明对手伤害类型或阵容触发的替换条件。" }
+    ],
+    "sections": [
+      { "title": "玩法思路", "body": "填写原创或获授权的玩法说明。" },
+      { "title": "关键条件", "body": "列出触发条件、优先级、反例和当前版本验证结果。" }
+    ],
+    "basic_sections": [
+      { "title": "本流派操作思路", "body": "只填写本流派适用的操作、条件和取舍；英雄通用基础另存 category 为 basic 的记录。" }
+    ],
+    "reviewed": false
+  }
+]

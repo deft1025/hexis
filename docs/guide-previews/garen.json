@@ -1,0 +1,49 @@
+[
+  {
+    "id": "sample-garen-waltz",
+    "title": "盖伦：利刃华尔兹旋转流",
+    "category": "fun",
+    "playstyle_name": "利刃华尔兹旋转流",
+    "summary": "先开 E，再接利刃华尔兹进场，围绕攻击力与暴击打造旋转输出。",
+    "champion_ids": ["Garen"],
+    "tags": ["旋转技能", "暴击"],
+    "core_augment_ids": ["ARAM_BladeWaltz"],
+    "alternative_augment_ids": [],
+    "recommendations": [
+      {"id": "ARAM_BladeWaltz", "priority": "core", "reason": "尝试先开启 E，再用利刃华尔兹进场，让旋转输出与进场过程衔接起来。"}
+    ],
+    "stages": [
+      {"label": "装备候选（非购买顺序）", "item_ids": ["6631", "3046", "3036", "3031", "3006", "6333"], "reason": "候选装备覆盖攻击、暴击与生存方向。完整购买顺序和替换条件待补充。"}
+    ],
+    "basic_sections": [
+      {"title": "技能衔接", "body": "先开 E，再接利刃华尔兹进场。练习时重点观察两者能否顺利衔接，以及旋转伤害的命中情况。"},
+      {"title": "锻体方向", "body": "优先考虑攻击力和暴击伤害；暴击率不足时，也可以用锻体补充暴击率。"}
+    ],
+    "sections": [
+      {"title": "版本提示", "body": "E 与利刃华尔兹的交互、锻体配比和实际伤害，尚未完成当前国服实测。"}
+    ],
+    "reviewed": false
+  },
+  {
+    "id": "sample-garen-basic",
+    "title": "盖伦：围绕 E 筛选联动",
+    "category": "basic",
+    "summary": "围绕 E 选择海克斯：旋转至胜走旋转增益方向，灵魂虹吸走暴击恢复方向。",
+    "champion_ids": ["Garen"],
+    "tags": ["E 技能", "海克斯选择"],
+    "core_augment_ids": [],
+    "alternative_augment_ids": ["ARAM_SpinToWin", "ARAM_SoulSiphon"],
+    "recommendations": [
+      {"id": "ARAM_SpinToWin", "priority": "alternative", "reason": "盖伦的 E 是主要旋转输出技能，与旋转至胜的加成方向契合。"},
+      {"id": "ARAM_SoulSiphon", "priority": "situational", "reason": "可以尝试用 E 的暴击伤害触发恢复，在兵线中观察实际回血效果。"}
+    ],
+    "stages": [
+      {"label": "攻速与暴击装备候选", "item_ids": ["3046", "3006", "3031"], "reason": "用于参考攻速与暴击方向，按当前搭配选择，不代表固定购买顺序。"}
+    ],
+    "sections": [
+      {"title": "选择方向", "body": "想围绕 E 的旋转加成来搭配，可以关注旋转至胜；想尝试暴击回血，则可以关注灵魂虹吸。"},
+      {"title": "版本提示", "body": "灵魂虹吸与 E 的触发条件、恢复量，以及海克斯和锻体攻速对 E 圈数的影响，仍待当前国服核对，暂不提供固定攻速档位。"}
+    ],
+    "reviewed": false
+  }
+]

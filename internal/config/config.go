@@ -15,8 +15,9 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Addr    string
-	GinMode string
+	Addr                string
+	GinMode             string
+	GuidePreviewEnabled bool
 }
 
 type DatabaseConfig struct {
@@ -43,8 +44,9 @@ func Load() *Config {
 
 	return &Config{
 		Server: ServerConfig{
-			Addr:    getEnv("HTTP_ADDR", ":8182"),
-			GinMode: getEnv("GIN_MODE", "debug"),
+			Addr:                getEnv("HTTP_ADDR", ":8182"),
+			GinMode:             getEnv("GIN_MODE", "debug"),
+			GuidePreviewEnabled: getEnvBool("GUIDE_PREVIEW_ENABLED", false),
 		},
 		Database: DatabaseConfig{
 			Enabled:      getEnvBool("DB_ENABLED", true),

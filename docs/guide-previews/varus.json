@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sample-varus-ethereal",
+    "title": "韦鲁斯：虚幻武器叠层联动",
+    "category": "fun",
+    "playstyle_name": "虚幻武器叠层联动",
+    "summary": "虚幻武器配合黄昏与黎明，尝试让技能参与枯萎叠层，再寻找引爆机会。",
+    "champion_ids": ["Varus"],
+    "tags": ["技能特效", "枯萎叠层"],
+    "core_augment_ids": ["ARAM_EtherealWeapon"],
+    "alternative_augment_ids": [],
+    "recommendations": [
+      {"id": "ARAM_EtherealWeapon", "priority": "core", "reason": "让技能也能触发攻击特效，配上黄昏与黎明，可以尝试加快枯萎叠层。"}
+    ],
+    "stages": [
+      {"label": "关键装备", "item_ids": ["2510"], "reason": "黄昏与黎明与虚幻武器组成这条路线的联动组合，完整出装和购买顺序待补充。"}
+    ],
+    "basic_sections": [
+      {"title": "看清层数再衔接", "body": "这组叠层思路需要虚幻武器配合黄昏与黎明。使用后先看目标身上的实际枯萎层数，再判断如何衔接引爆。"}
+    ],
+    "sections": [
+      {"title": "版本提示", "body": "单次技能的挂层次数、攻击特效冷却与具体交互仍待当前国服核对，不能默认一次技能就能叠满。"}
+    ],
+    "reviewed": false
+  }
+]

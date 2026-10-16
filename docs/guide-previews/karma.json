@@ -1,0 +1,31 @@
+[
+  {
+    "id": "sample-karma-shield",
+    "title": "卡尔玛：团队护盾流",
+    "category": "fun",
+    "playstyle_name": "团队护盾流",
+    "summary": "围绕 RE 给队友提供范围护盾，装备与锻体关注技能急速和治疗、护盾强度。",
+    "champion_ids": ["Karma"],
+    "tags": ["团队护盾", "技能急速"],
+    "core_augment_ids": ["ARAM_WeeWooWeeWoo"],
+    "alternative_augment_ids": ["ARAM_FirstAidKit", "UltimateAwakening"],
+    "recommendations": [
+      {"id": "ARAM_WeeWooWeeWoo", "priority": "core", "reason": "面向低生命值队友时提升治疗和护盾效果，契合这套以保护队友为主的玩法。"},
+      {"id": "ARAM_FirstAidKit", "priority": "alternative", "reason": "直接提供治疗与护盾强度，能与卡尔玛的 E、RE 护盾方向搭配。"},
+      {"id": "UltimateAwakening", "priority": "situational", "reason": "可以尝试把 R 与基础技能刷新衔接起来，走更频繁施法的方向。"}
+    ],
+    "stages": [
+      {"label": "护盾流装备候选（非购买顺序）", "item_ids": ["3107", "3504", "2526", "6616", "3158", "4005", "3118", "6617"], "reason": "从技能急速、治疗与护盾方向挑选搭配。这是一组候选池，具体购买顺序和替换条件待补充。"}
+    ],
+    "basic_sections": [
+      {"title": "围绕 RE 保护队友", "body": "这套玩法以 RE 的范围护盾为核心，属性上关注技能急速以及治疗与护盾强度。"}
+    ],
+    "sections": [
+      {"title": "版本提示", "body": "海克斯的具体加成、终极唤醒的触发与冷却，以及装备搭配的实际收益仍待当前国服实测。"}
+    ],
+    "references": [
+      {"name": "海斗小助手：急救用具适配英雄", "url": "https://lolhaidou.cn/augment/firstaidkit.html", "note": "急救用具与卡尔玛的适配参考。"}
+    ],
+    "reviewed": false
+  }
+]

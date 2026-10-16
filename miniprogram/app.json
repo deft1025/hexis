@@ -1,0 +1,16 @@
+{
+  "pages": ["pages/home/index", "pages/champions/index", "pages/augments/index", "pages/items/index", "pages/mine/index", "pages/detail/index", "pages/search/index", "pages/guides/index"],
+  "window": { "navigationBarTitleText": "海克斯手册", "navigationBarBackgroundColor": "#dfece5", "navigationBarTextStyle": "black", "backgroundColor": "#eef2f4", "enablePullDownRefresh": true },
+  "tabBar": {
+    "color": "#7b8785", "selectedColor": "#087e70", "backgroundColor": "#e3ede8", "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/home/index", "text": "手册", "iconPath": "assets/book-open.png", "selectedIconPath": "assets/book-open-active.png" },
+      { "pagePath": "pages/champions/index", "text": "英雄", "iconPath": "assets/users.png", "selectedIconPath": "assets/users-active.png" },
+      { "pagePath": "pages/augments/index", "text": "海克斯", "iconPath": "assets/sparkles.png", "selectedIconPath": "assets/sparkles-active.png" },
+      { "pagePath": "pages/items/index", "text": "装备", "iconPath": "assets/backpack.png", "selectedIconPath": "assets/backpack-active.png" },
+      { "pagePath": "pages/mine/index", "text": "我的", "iconPath": "assets/bookmark.png", "selectedIconPath": "assets/bookmark-active.png" }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

@@ -1,0 +1,115 @@
+<template name="entry">
+  <view class="entry {{kind === 'augments' ? 'augment-entry' : ''}}" bindtap="action" data-action="open" data-kind="{{kind}}" data-id="{{id}}" data-missing="{{missing}}">
+    <image wx:if="{{icon_url}}" class="avatar {{rarityClass}}" src="{{icon_url}}" mode="aspectFill" />
+    <view wx:else class="avatar placeholder"><image class="icon" src="/assets/book-open.png" /></view>
+    <view class="entry-copy"><text class="entry-name">{{name}}</text><text class="entry-meta">{{meta}}</text><text wx:if="{{linkageLabel}}" class="linkage-count">{{linkageLabel}}</text><text wx:if="{{kind === 'augments'}}" class="entry-effect">{{description}}</text><text wx:if="{{reason}}" class="entry-effect">{{priority}} · {{reason}}</text></view>
+    <image class="icon chevron" src="/assets/chevron-right.png" />
+  </view>
+</template>
+<template name="tokens">
+  <view class="token-list"><view wx:for="{{rows}}" wx:key="id" class="token" bindtap="action" data-action="open" data-kind="{{item.kind}}" data-id="{{item.id}}" data-missing="{{item.missing}}"><image class="token-icon {{item.rarityClass}}" src="{{item.icon_url}}" mode="aspectFill" /><text>{{item.name}}</text></view></view>
+</template>
+<template name="guide">
+  <view class="guide-card">
+    <view class="guide-title" bindtap="action" data-action="open" data-kind="guides" data-id="{{id}}"><view><text class="overline">{{meta}}</text><text class="section-title">{{title}}</text></view></view>
+    <text class="body-copy guide-summary" bindtap="action" data-action="open" data-kind="guides" data-id="{{id}}">{{augmentRelation ? augmentRelation.reason : summary}}</text>
+    <view wx:if="{{core.length}}" class="guide-core"><text class="band-label">核心</text><template is="tokens" data="{{rows: core}}" /></view>
+    <view class="guide-open" bindtap="action" data-action="open" data-kind="guides" data-id="{{id}}"><text>查看玩法</text><image class="icon" src="/assets/chevron-right.png" /></view>
+  </view>
+</template>
+
+<template name="hero-example">
+  <view class="hero-example">
+    <view class="hero-example-heading" bindtap="action" data-action="open" data-kind="champions" data-id="{{id}}" data-playstyle="{{playstyle}}"><image class="avatar" src="{{icon_url}}" /><view class="entry-copy"><text class="entry-name">{{name}}</text><text class="entry-meta">{{meta}}</text></view><image class="icon" src="/assets/chevron-right.png" /></view>
+    <view wx:for="{{relations}}" wx:key="guideID" class="hero-example-reason"><text class="overline">{{item.priorityText}}</text><text class="body-copy">{{item.reason}}</text><view class="text-action" bindtap="action" data-action="open" data-kind="guides" data-id="{{item.guideID}}"><text>{{item.playstyle}}</text><image class="icon" src="/assets/arrow-up-right.png" /></view></view>
+  </view>
+</template>
+
+<view class="workspace">
+  <view wx:if="{{mode === 'home'}}" class="home-heading"><text class="overline">HEXIS / 游戏手册</text><view class="heading-line"><text class="page-title">海克斯大乱斗</text><view class="version" bindtap="action" data-action="settings"><view class="status-dot"></view><text>{{patch || '连接中'}}</text></view></view></view>
+  <view wx:elif="{{mode !== 'detail'}}" class="heading-line page-heading"><text class="page-title">{{title}}</text><text class="muted">{{mode === 'mine' ? favoritesCount + ' 项收藏' : patch}}</text></view>
+
+  <view wx:if="{{loading}}" class="state-view"><view class="loading-line"></view><text>正在加载版本资料</text></view>
+  <view wx:elif="{{error}}" class="state-view"><image class="state-icon" src="/assets/wifi-off.png" /><text class="section-title">暂时无法连接</text><text class="body-copy">{{error}}</text><button class="command" bindtap="action" data-action="retry">重新加载</button></view>
+  <block wx:else>
+    <block wx:if="{{mode === 'home'}}">
+      <view class="search-control" bindtap="action" data-action="navigate" data-mode="search"><image class="icon" src="/assets/search.png" /><text>搜索英雄、海克斯、装备与玩法</text><image class="icon" src="/assets/arrow-up-right.png" /></view>
+      <view class="quick-links"><view bindtap="action" data-action="navigate" data-mode="guides"><image class="icon accent" src="/assets/sparkles-active.png" /><view><text class="entry-name">玩法手册</text><text class="entry-meta">联动与出装思路</text></view><image class="icon" src="/assets/chevron-right.png" /></view><view bindtap="action" data-action="navigate" data-mode="items"><image class="icon accent" src="/assets/backpack-active.png" /><view><text class="entry-name">装备速查</text><text class="entry-meta">{{counts.items}} 件装备</text></view><image class="icon" src="/assets/chevron-right.png" /></view></view>
+      <view class="section-heading"><text class="section-title">英雄速查</text><view class="text-action" bindtap="action" data-action="navigate" data-mode="champions">全部 {{counts.champions}} <image class="icon" src="/assets/chevron-right.png" /></view></view>
+      <view class="hero-grid"><view wx:for="{{heroes}}" wx:key="id" class="hero-tile" bindtap="action" data-action="open" data-kind="champions" data-id="{{item.id}}"><image src="{{item.icon_url}}" mode="aspectFill" /><text>{{item.name}}</text><text class="entry-meta">{{item.meta}}</text></view></view>
+      <view class="section-heading"><text class="section-title">玩法精选</text><view class="text-action" bindtap="action" data-action="navigate" data-mode="guides">全部玩法 <image class="icon" src="/assets/chevron-right.png" /></view></view>
+      <view wx:if="{{guidesLoading}}" class="empty-inline">玩法加载中</view>
+      <view wx:elif="{{guideError}}" class="empty-inline"><text>{{guideError}}</text><button class="text-command" bindtap="action" data-action="retryGuides">重试</button></view>
+      <block wx:elif="{{featured.length}}"><template wx:for="{{featured}}" wx:key="id" is="guide" data="{{...item}}" /></block>
+      <view wx:else class="empty-inline"><image class="icon" src="/assets/book-open.png" /><text>暂无已审核玩法</text></view>
+      <block wx:if="{{recent.length}}"><view class="section-heading"><text class="section-title">最近查看</text><view class="text-action" bindtap="action" data-action="navigate" data-mode="mine">查看全部 <image class="icon" src="/assets/chevron-right.png" /></view></view><template wx:for="{{recent}}" wx:key="id" is="entry" data="{{...item}}" /></block>
+      <view class="catalog-counts"><text>{{counts.champions}} 英雄</text><text>{{counts.augments}} 海克斯</text><text>{{counts.items}} 装备</text></view>
+    </block>
+
+    <block wx:if="{{mode === 'champions' || mode === 'augments' || mode === 'items' || mode === 'guides' || mode === 'search'}}">
+      <view class="search-control"><image class="icon" src="/assets/search.png" /><input value="{{query}}" placeholder="{{mode === 'search' ? '英雄、海克斯、装备或玩法' : mode === 'guides' ? '搜索英雄、玩法或海克斯' : '搜索名称或效果'}}" bindinput="input" bindconfirm="confirmSearch" confirm-type="search" /><view wx:if="{{query}}" bindtap="action" data-action="change" data-field="query" data-value=""><image class="icon" src="/assets/x.png" /></view></view>
+      <view wx:if="{{mode === 'augments'}}" class="segments"><view class="{{filter === '' ? 'selected' : ''}}" bindtap="action" data-action="change" data-field="filter" data-value="">全部</view><view class="{{filter === 'Prismatic' ? 'selected' : ''}}" bindtap="action" data-action="change" data-field="filter" data-value="Prismatic">棱彩</view><view class="{{filter === 'Gold' ? 'selected' : ''}}" bindtap="action" data-action="change" data-field="filter" data-value="Gold">黄金</view><view class="{{filter === 'Silver' ? 'selected' : ''}}" bindtap="action" data-action="change" data-field="filter" data-value="Silver">白银</view></view>
+      <block wx:if="{{mode === 'augments'}}"><view class="filter-wrap"><view class="chip {{!linkedOnly ? 'selected' : ''}}" bindtap="action" data-action="change" data-field="linkedOnly" data-value="">全部海克斯</view><view class="chip {{linkedOnly ? 'selected' : ''}}" bindtap="action" data-action="change" data-field="linkedOnly" data-value="1">有联动 · {{linkedAugmentCount}}</view></view><view wx:if="{{guidesLoading}}" class="empty-inline">联动资料加载中</view><view wx:elif="{{guideError}}" class="empty-inline"><text>{{guideError}}</text><button class="text-command" bindtap="action" data-action="retryGuides">重试</button></view></block>
+      <view wx:if="{{mode === 'items'}}" class="filter-wrap"><view class="chip {{filter === '' ? 'selected' : ''}}" bindtap="action" data-action="change" data-field="filter" data-value="">全部</view><view wx:for="{{['攻击','法术','防御','功能','鞋子','消耗品','其他']}}" wx:key="*this" class="chip {{filter === item ? 'selected' : ''}}" bindtap="action" data-action="change" data-field="filter" data-value="{{item}}">{{item}}</view><view class="sort-control" bindtap="action" data-action="change" data-field="sort" data-value="{{sort === 'price' ? 'name' : 'price'}}"><image class="icon" src="/assets/arrow-down-up.png" /><text>{{sort === 'price' ? '按价格' : '按名称'}}</text></view></view>
+      <block wx:if="{{mode === 'search'}}">
+        <view wx:if="{{!query}}" class="section-heading"><text class="section-title">最近搜索</text></view><view wx:if="{{!query}}" class="filter-wrap"><view wx:for="{{searches}}" wx:key="*this" class="chip" bindtap="action" data-action="change" data-field="query" data-value="{{item}}">{{item}}</view><text wx:if="{{!searches.length}}" class="body-copy">暂无搜索记录</text></view>
+        <view wx:if="{{query && !groups.length}}" class="empty-inline">没有找到匹配资料</view>
+        <view wx:for="{{groups}}" wx:key="kind"><view class="section-heading"><text class="section-title">{{item.title}}</text><text class="muted">{{item.count}} 条</text></view><template wx:for="{{item.items}}" wx:for-item="entry" wx:key="id" is="entry" data="{{...entry}}" /><view wx:if="{{item.count > 20}}" class="text-action" bindtap="action" data-action="navigate" data-mode="{{item.kind}}" data-query="{{query}}">查看全部</view></view>
+      </block>
+      <block wx:else>
+        <view class="result-line"><text>{{total}} 条{{mode === 'guides' ? (query ? '匹配玩法' : '玩法') : (query ? '匹配资料' : '资料')}}</text><text wx:if="{{pageCount > 1}}">{{page}} / {{pageCount}} 页</text></view>
+        <block wx:if="{{mode !== 'guides'}}"><template wx:for="{{rows}}" wx:key="id" is="entry" data="{{...item}}" /></block>
+        <block wx:else><template wx:for="{{rows}}" wx:key="id" is="guide" data="{{...item}}" /></block>
+        <view wx:if="{{mode === 'guides' && guidesLoading}}" class="empty-inline">玩法加载中</view>
+        <view wx:elif="{{!rows.length && !(mode === 'guides' && guideError)}}" class="empty-inline">{{mode === 'guides' ? (query ? '没有找到匹配玩法，试试英雄名或海克斯名' : '暂无已审核玩法') : '没有找到匹配资料'}}</view>
+        <view wx:if="{{guideError && mode === 'guides'}}" class="empty-inline"><text>{{guideError}}</text><button class="text-command" bindtap="action" data-action="retryGuides">重试</button></view>
+        <view wx:if="{{pageCount > 1}}" class="pager"><button disabled="{{page === 1}}" bindtap="action" data-action="change" data-field="page" data-value="{{page-1}}"><image class="icon" src="/assets/chevron-left.png" /></button><text>第 {{page}} / {{pageCount}} 页</text><button disabled="{{page === pageCount}}" bindtap="action" data-action="change" data-field="page" data-value="{{page+1}}"><image class="icon" src="/assets/chevron-right.png" /></button></view>
+      </block>
+    </block>
+
+    <block wx:if="{{mode === 'mine'}}">
+      <view class="personal-heading"><image class="personal-icon" src="/assets/bookmark-active.png" /><view><text class="section-title">我的手册</text><text class="body-copy">{{favoritesCount}} 项收藏 · 本机保存</text></view><image class="icon" bindtap="action" data-action="settings" src="/assets/info.png" /></view>
+      <view class="section-heading"><text class="section-title">收藏</text></view><template wx:for="{{favorites}}" wx:key="id" is="entry" data="{{...item}}" /><view wx:if="{{!favorites.length}}" class="empty-inline">暂无收藏</view>
+      <view class="section-heading"><text class="section-title">最近查看</text><button class="icon-button" bindtap="action" data-action="clear"><image class="icon" src="/assets/trash-2.png" /></button></view><template wx:for="{{recent}}" wx:key="id" is="entry" data="{{...item}}" /><view wx:if="{{!recent.length}}" class="empty-inline">暂无查看记录</view>
+      <view class="source-line" bindtap="action" data-action="settings"><text>资料与版本</text><text>{{patch}}</text><image class="icon" src="/assets/chevron-right.png" /></view>
+    </block>
+
+    <block wx:if="{{mode === 'detail'}}">
+      <view wx:if="{{!detail}}" class="state-view"><text>当前版本未收录该资料</text></view>
+      <block wx:else>
+        <view class="detail-heading {{kind === 'guides' ? 'guide-heading' : ''}}"><image wx:if="{{detail.icon_url}}" class="detail-avatar {{detail.rarityClass}}" src="{{detail.icon_url}}" mode="aspectFill" /><view class="detail-copy"><text class="overline">{{kind === 'champions' ? '英雄档案' : kind === 'augments' ? '强化符文' : kind === 'items' ? '装备档案' : '编辑玩法'}} / {{patch}}</text><text class="detail-title">{{detail.name}}</text><text class="body-copy">{{skills ? skills.title + ' · ' + skills.roleText : detail.meta}}</text></view><button class="icon-button {{detail.saved ? 'is-saved' : ''}}" bindtap="action" data-action="favorite" data-kind="{{kind}}" data-id="{{id}}"><image class="icon" src="/assets/{{detail.saved ? 'bookmark-active' : 'bookmark'}}.png" /></button></view>
+        <block wx:if="{{kind === 'champions'}}">
+          <view class="source-line skill-toggle" bindtap="action" data-action="skills"><image class="icon" src="/assets/swords.png" /><text>英雄技能</text><image class="icon" src="/assets/{{skillsOpen ? 'x' : 'chevron-right'}}.png" /></view>
+          <view wx:if="{{skillsOpen}}" class="skills"><text wx:if="{{skillsLoading}}" class="body-copy">技能加载中</text><view wx:if="{{skillsError}}" class="empty-inline"><text>{{skillsError}}</text><button class="text-command" bindtap="action" data-action="skillsRetry">重新加载</button></view><view wx:for="{{skills.skills}}" wx:key="key" class="skill"><image class="avatar" src="{{item.icon_url}}" /><view><text class="entry-name">{{item.key}} · {{item.name}}</text><text class="body-copy">{{item.description}}</text></view></view><text wx:if="{{skills}}" class="source-caption">Data Dragon {{skills.version}} · 技能数值及模式调整以游戏内为准</text></view>
+          <view class="section-heading"><text class="section-title">英雄玩法</text><view wx:if="{{playstyle}}" class="text-action" bindtap="action" data-action="change" data-field="playstyle" data-value="">全部玩法<image class="icon" src="/assets/chevron-right.png" /></view></view>
+          <view wx:if="{{guidesLoading}}" class="empty-inline">玩法加载中</view><view wx:elif="{{guideError}}" class="empty-inline"><text>{{guideError}}</text><button class="text-command" bindtap="action" data-action="retryGuides">重试</button></view>
+          <block wx:else>
+            <template wx:for="{{heroGuides}}" wx:key="id" is="guide" data="{{...item}}" /><view wx:if="{{!heroGuides.length}}" class="empty-inline">该英雄暂无已审核的趣味玩法</view>
+            <view wx:if="{{commonBasics.length}}" class="section-heading"><text class="section-title">英雄通用基础</text></view><template wx:for="{{commonBasics}}" wx:key="id" is="guide" data="{{...item}}" />
+          </block>
+          <view class="detail-links"><view bindtap="action" data-action="navigate" data-mode="augments"><text>全部海克斯</text><image class="icon" src="/assets/arrow-up-right.png" /></view><view bindtap="action" data-action="navigate" data-mode="items"><text>装备速查</text><image class="icon" src="/assets/arrow-up-right.png" /></view></view>
+        </block>
+        <block wx:if="{{kind === 'augments' || kind === 'items'}}">
+          <view class="section-heading"><text class="section-title">{{kind === 'augments' ? '海克斯效果' : '属性与效果'}}</text><text class="muted">{{detail.rarityName}}</text></view><text class="effect-body">{{detail.description}}</text>
+          <view wx:if="{{kind === 'items'}}" class="equipment-prices"><view><text class="overline">总价</text><text>{{detail.price}} <text class="muted">金币</text></text></view><view><text class="overline">卖价</text><text>{{detail.sell_price}} <text class="muted">金币</text></text></view><text class="tag">{{detail.purchasable ? '可购买' : '变形或特殊装备'}}</text></view>
+          <view wx:if="{{kind === 'items' && detail.required_champion}}" class="body-copy">专属英雄：{{detail.required_champion}}</view>
+          <block wx:if="{{kind === 'items' && recipe.length}}"><view class="section-heading"><text class="section-title">合成配方</text></view><template is="tokens" data="{{rows: recipe}}" /></block>
+          <block wx:if="{{kind === 'augments'}}">
+            <view class="section-heading"><text class="section-title">联动英雄</text><text class="muted">{{relatedHeroes.length}} 位实例</text></view>
+            <view wx:if="{{guidesLoading}}" class="empty-inline">联动资料加载中</view><view wx:elif="{{guideError}}" class="empty-inline"><text>{{guideError}}</text><button class="text-command" bindtap="action" data-action="retryGuides">重试</button></view>
+            <block wx:else><template wx:for="{{relatedExamples}}" wx:key="id" is="hero-example" data="{{...item}}" /><view wx:if="{{!relatedExamples.length}}" class="empty-inline">该海克斯的英雄实例待补充</view><view wx:if="{{moreRelatedExamples}}" class="text-action" bindtap="action" data-action="change" data-field="examplesExpanded" data-value="1">展开全部英雄实例</view></block>
+            <view class="section-heading"><text class="section-title">关联玩法</text><text class="muted">{{relatedGuides.length}} 条</text></view><template wx:for="{{relatedGuides}}" wx:key="id" is="guide" data="{{...item}}" /><view wx:if="{{!guidesLoading && !guideError && !relatedGuides.length}}" class="empty-inline">该海克斯的关联玩法待补充</view>
+          </block>
+        </block>
+        <block wx:if="{{kind === 'guides' && guideDetail}}">
+          <view class="guide-intro"><text class="effect-body">{{guideDetail.summary}}</text><template wx:if="{{guideDetail.heroes.length}}" is="tokens" data="{{rows: guideDetail.heroes}}" /></view>
+          <block wx:if="{{guideDetail.readingSections.length}}"><view class="section-heading"><text class="section-title">怎么玩</text></view><view wx:for="{{guideDetail.readingSections}}" wx:key="index" class="basic-section"><text class="band-label">{{item.title}}</text><text class="effect-body">{{item.body}}</text></view></block>
+          <block wx:if="{{guideDetail.augmentChoices.length}}"><view class="section-heading"><text class="section-title">海克斯搭配</text></view><view wx:for="{{guideDetail.augmentChoices}}" wx:key="id" class="augment-choice"><view class="entry" bindtap="action" data-action="open" data-kind="augments" data-id="{{item.id}}"><image class="avatar {{item.rarityClass}}" src="{{item.icon_url}}" /><view class="entry-copy"><text class="overline">{{item.priority}}</text><text class="entry-name">{{item.name}}</text></view><image class="icon chevron" src="/assets/chevron-right.png" /></view><text wx:if="{{item.reason}}" class="effect-body">{{item.reason}}</text></view></block>
+          <block wx:if="{{guideDetail.category !== 'basic' || guideDetail.stages.length}}"><view class="section-heading"><text class="section-title">装备选择</text></view><view wx:for="{{guideDetail.stages}}" wx:key="label" class="guide-band"><text class="band-label">{{item.label}}</text><template is="tokens" data="{{rows: item.items}}" /><text class="body-copy">{{item.reason}}</text></view><view wx:if="{{!guideDetail.stages.length}}" class="empty-inline">配套装备待补充</view></block>
+          <view wx:if="{{guideDetail.versionNotes.length}}" class="version-notes"><text class="band-label">版本提示</text><text wx:for="{{guideDetail.versionNotes}}" wx:key="index" class="body-copy">{{item.body}}</text></view>
+        </block>
+        <view class="source-footer"><text class="overline">资料来源</text><text class="body-copy">{{source.name}}</text><text wx:if="{{source.attribution}}" class="body-copy">{{source.attribution}}</text><view wx:if="{{source.url}}" class="text-action" bindtap="action" data-action="copySource">查看来源 <image class="icon" src="/assets/arrow-up-right.png" /></view><view wx:for="{{guideDetail.references}}" wx:key="url"><view class="text-action" bindtap="action" data-action="copyReference" data-url="{{item.url}}"><text>{{item.name}}</text><image class="icon" src="/assets/arrow-up-right.png" /></view><text wx:if="{{item.note}}" class="body-copy">{{item.note}}</text></view></view>
+      </block>
+    </block>
+  </block>
+</view>

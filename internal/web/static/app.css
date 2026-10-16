@@ -44,3 +44,25 @@ body[data-page="champions"] .site-header,body[data-page="augments"] .site-header
 body[data-page="champion"] .detail-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:1050px){.champion-table .ranking-head,.champion-table .ranking-row{min-width:850px}.augment-table .ranking-head,.augment-table .ranking-row{min-width:700px}.item-table .ranking-head,.item-table .ranking-row{min-width:800px}}
 @media(max-width:700px){.guide-grid{grid-template-columns:1fr}}
+.augment-table .entity-icon{width:48px;height:48px;padding:4px;object-fit:contain;background:#252d38;border:2px solid #929eac;border-radius:8px}
+.augment-table .ranking-row[data-rarity="Gold"] .entity-icon{border-color:#c49a42}
+.augment-table .ranking-row[data-rarity="Prismatic"] .entity-icon{border-color:#ac8ed5}
+.augment-table .entity-cell{align-items:flex-start}
+.augment-table .entity-cell strong{white-space:normal;overflow-wrap:anywhere}
+.augment-table .entity-cell small{max-width:none;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.7;font-size:12px;margin-top:4px;overflow-wrap:anywhere}
+.augment-table .ranking-row{padding-top:18px;padding-bottom:18px;min-height:96px}
+.pagination{display:flex;flex:initial;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:12px;margin:16px 0;color:var(--muted);scroll-margin-top:16px}
+.pagination[hidden]{display:none}
+.page-size{display:flex;align-items:center;gap:8px;margin-right:auto;font-size:13px;white-space:nowrap}
+.page-size select{min-width:0;width:82px;height:36px;padding:5px 8px;border-radius:6px;font-size:13px}
+.page-buttons{display:flex;align-items:center;gap:4px}
+.page-buttons button{display:grid;place-items:center;width:36px;height:36px;padding:0;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--text);font:inherit;font-size:13px;cursor:pointer}
+.page-buttons button:hover:not(:disabled){background:#f0edff;border-color:var(--purple)}
+.page-buttons button[aria-current="page"]{background:var(--purple);border-color:var(--purple);color:#fff;font-weight:700}
+.page-buttons button:disabled{opacity:.35;cursor:default}
+.page-buttons img{display:block;width:18px;height:18px}
+.pagination-gap{display:grid;place-items:center;width:20px;height:36px}
+.page-summary{font-size:13px;white-space:nowrap;min-width:58px;text-align:right}
+@media(max-width:700px){.augment-table .ranking-head,.augment-table .ranking-row{min-width:0;grid-template-columns:26px minmax(0,1fr) 48px;gap:10px;padding-left:12px;padding-right:12px}.augment-table .ranking-head>span:nth-child(3),.augment-table .ranking-head>span:nth-child(4),.augment-table .ranking-row>span:nth-child(3),.augment-table .ranking-row>span:nth-child(4){display:none}.augment-table .entity-cell{gap:10px}.augment-table .entity-icon{width:42px;height:42px}.augment-table .entity-cell strong{font-size:15px}.augment-table .rarity{font-size:12px}.augment-table .entity-cell small{font-size:12px}.pagination{gap:10px 8px}.page-size{flex:1}.page-summary{order:2}.page-buttons{order:3;flex-basis:100%;justify-content:center}.page-buttons button{width:34px;height:34px}.pagination-gap{width:16px}.augment-table{border-radius:8px}}
+.item-table .ranking-row{padding-top:16px;padding-bottom:16px}.item-table .entity-cell strong{white-space:normal;overflow-wrap:anywhere}.item-category{color:var(--muted);font-size:12px}.item-effect{line-height:1.8;overflow-wrap:anywhere}.item-effect small{display:block;margin-top:8px}.entity-cell small.item-mobile-category{display:none}
+@media(max-width:700px){.item-table .ranking-head,.item-table .ranking-row{min-width:0;grid-template-columns:26px minmax(0,1fr) 60px;gap:10px;padding-left:12px;padding-right:12px}.item-table .ranking-head>span:nth-child(3),.item-table .ranking-head>span:nth-child(5),.item-table .item-category{display:none}.item-table .item-effect{grid-column:2/-1;text-align:left;font-size:12px}.item-table .entity-cell{gap:10px}.item-table .entity-cell strong{font-size:15px}.entity-cell small.item-mobile-category{display:block;white-space:normal;font-size:11px}.item-price{font-size:13px}.item-table{border-radius:8px}}

@@ -47,7 +47,7 @@ func main() {
 
 	server := &http.Server{
 		Addr:              cfg.Server.Addr,
-		Handler:           router.New(db),
+		Handler:           router.NewWithGuidePreview(db, cfg.Server.GuidePreviewEnabled),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,
