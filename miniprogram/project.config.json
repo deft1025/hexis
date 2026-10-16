@@ -1,5 +1,5 @@
 {
-  "appid": "wxbc88a16b3179de8f",
+  "appid": "wxc7aacdea4b89ba9a",
   "projectname": "hexis-handbook",
   "description": "海克斯大乱斗玩法手册",
   "compileType": "miniprogram",
@@ -8,7 +8,7 @@
     "es6": true,
     "enhance": true,
     "minified": true,
-    "urlCheck": false,
+    "urlCheck": true,
     "postcss": false,
     "compileWorklet": false,
     "uglifyFileName": false,

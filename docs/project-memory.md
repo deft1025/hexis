@@ -115,7 +115,7 @@
 
 ## 本地展示与后续维护
 
-- 微信项目为 `miniprogram/`，本地 API 地址配置在 `miniprogram/app.js`，当前默认 `http://127.0.0.1:8182`。
+- 微信项目为 `miniprogram/`，API 地址配置在 `miniprogram/app.js`，当前为正式接口 `https://hexis.xuninfo.top`。2026-10-16 用户确认后端和 HTTPS 已部署，健康检查返回正常；项目已开启域名校验。上传前需在小程序后台添加该 request 合法域名，按 `miniprogram/README.md` 完成体验版验证和审核发布。代码配置完成不代表已在微信后台上传或发布。
 - 开发预览后端需 `GUIDE_PREVIEW_ENABLED=1`，API 为 `/api/v1/guides?preview=1`；正常查询始终读审核表。浏览器使用 `/mini/?guides=preview`，微信开发版自动启用预览，体验版/正式版不启用。
 - 客户端共用 `miniprogram/lib/core.js`。修改共用前端后运行 `node scripts/build-mini-preview.cjs`；Go 内嵌预览资源需重新构建并重启本地服务。
 - 再次交接时更新本文件中的实际版本、数量、来源、脚本位置、完成状态和待办；不记录临时进程 PID，也不承诺后台自动更新。当前没有设置定时采集任务。
