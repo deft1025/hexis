@@ -20,6 +20,7 @@ type Options struct {
 	SourceAttribution string
 	File              string
 	Content           []byte
+	DryRun            bool
 }
 
 func Import(ctx context.Context, db *sql.DB, options Options) (int, error) {
@@ -121,6 +122,9 @@ func Import(ctx context.Context, db *sql.DB, options Options) (int, error) {
 			return 0, err
 		}
 		count++
+	}
+	if options.DryRun {
+		return count, tx.Rollback()
 	}
 	if err := tx.Commit(); err != nil {
 		return 0, err

@@ -240,15 +240,23 @@ type spellValue struct {
 }
 
 type binEntry struct {
-	Type          string `json:"__type"`
-	AugmentNameID string `json:"AugmentNameId"`
-	NameTra       string `json:"NameTra"`
-	Description   string `json:"DescriptionTra"`
-	RootSpell     string `json:"RootSpell"`
-	Icon          string `json:"AugmentSmallIconPath"`
-	Rarity        int    `json:"rarity"`
-	Spell         struct {
-		DataValues []spellValue `json:"DataValues"`
+	Type             string `json:"__type"`
+	AugmentNameID    string `json:"AugmentNameId"`
+	NameTra          string `json:"NameTra"`
+	Description      string `json:"DescriptionTra"`
+	RootSpell        string `json:"RootSpell"`
+	Icon             string `json:"AugmentSmallIconPath"`
+	Rarity           int    `json:"rarity"`
+	IsAbilityAugment bool   `json:"IsAbilityAugment"`
+	QuestData        struct {
+		Quest string `json:"Quest"`
+	} `json:"QuestData"`
+	Milestones []struct {
+		Requirement float64 `json:"{7fec0982}"`
+	} `json:"Milestones"`
+	Spell struct {
+		DataValues   []spellValue                `json:"DataValues"`
+		Calculations map[string]spellCalculation `json:"mSpellCalculations"`
 	} `json:"mSpell"`
 }
 
@@ -301,7 +309,7 @@ func convertAugments(patch string, lists []augmentList, bin map[string]binEntry,
 		if !strings.HasPrefix(icon, "assets/") || strings.Contains(icon, "..") || !strings.HasSuffix(icon, ".tex") {
 			return nil, nil, fmt.Errorf("invalid icon for %s", augment.AugmentNameID)
 		}
-		description, tokens := renderDescription(template, bin[augment.RootSpell].Spell.DataValues, translations)
+		description, tokens := renderAugmentDescription(template, augment, bin, translations)
 		if len(tokens) > 0 {
 			variable = append(variable, VariableDescription{ID: augment.AugmentNameID, Template: template, Tokens: tokens})
 		}

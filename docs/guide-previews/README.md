@@ -1,5 +1,7 @@
 # 公开玩法样例
 
+2026-10-19 已在原有十条样例基础上整理扩充批次；本文件和六份 JSON 仅描述原始十条样例，不能再作为预览表的全量清单。新批次、旧数据处理、备份和后续版本更新见 [玩法扩充与版本更新](../guide-expansion/README.md)。盖伦和塔姆基础记录已有补充，不要不加核对地用这里的旧 JSON 覆盖数据库最新内容。
+
 当前共十条，涉及六位英雄：塔姆三条流派样例与一条通用基础，盖伦一条流派样例与一条通用基础，另补卡特琳娜、韦鲁斯、卡尔玛、索拉卡各一条。由海斗小助手公开网页的玩法提示、机制提示和装备候选整理，重写描述并保留来源；未获取小程序内的完整攻略、购买顺序或付费内容。没有导入胜率、选取率或排名。
 
 正文按玩家阅读习惯描述玩法、搭配和操作，采集与整理过程保留在本文档和来源信息中。未实测的机制集中写在各条“版本提示”，`reviewed` 仍为 `false`，不因文案润色改变审核状态。缺失的装备或顺序直接标注待补充。
@@ -39,6 +41,6 @@ go run ./cmd/importer import --patch 16.20 --kind guide-previews --file docs/gui
 
 新增 `katarina.json`、`varus.json`、`karma.json`、`soraka.json` 也按同样命令逐个导入，使用各英雄单独的来源名称与英雄页 URL，避免覆盖来源链接。每个文件均为一条预览记录。
 
-预览服务需显式设置 `GUIDE_PREVIEW_ENABLED=1`。浏览器访问 `/mini/?guides=preview#detail?kind=champions&id=TahmKench`，可以选择流派并切换三个栏目；微信开发版自动请求样例，体验版与正式版读取已审核表。正常 `/api/v1/guides` 始终读取 `gameplay_guides`，只有启用预览后的 `?preview=1` 才读取样例表。预览开关默认关闭，不用于部署正式服务。
+预览服务需显式设置 `GUIDE_PREVIEW_ENABLED=1`。浏览器访问 `/mini/?guides=preview#detail?kind=champions&id=TahmKench`，可以选择流派并切换三个栏目；微信开发版默认读取已审核表，本地查看样例时需手动将 `app.js` 的 `globalData.previewGuides` 设置为 `true`，并连接已启用预览的开发后端，上传前恢复为 `false`。体验版与正式版始终读取已审核表。正常 `/api/v1/guides` 始终读取 `gameplay_guides`，只有启用预览后的 `?preview=1` 才读取样例表。预览开关默认关闭，不用于部署正式服务。
 
 核对授权、当前版本和实际联动后，再按正常 `--kind guides` 流程录入审核内容。装备候选不是购买顺序，不补造来源没有提供的详细联动理由。

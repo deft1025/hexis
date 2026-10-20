@@ -26,6 +26,7 @@ const app = create({
 });
 (async () => {
   await app.load();
+  assert.equal(last.guideStatusText, '玩法仅展示已审核的编辑内容。');
   app.enter('champions');
   assert.equal(last.rows.length, 24);
   app.change('page', 2);
@@ -76,6 +77,8 @@ const app = create({
     }
   });
   await previewApp.load();
+  assert.match(last.guideStatusText, /预览模式.*尚未审核/);
+  assert(!last.guideStatusText.includes('仅展示已审核'));
   previewApp.enter('detail', { kind: 'champions', id: 'TahmKench' });
   assert.match(last.heroGuides[0].meta, /样例待核对/);
   previewApp.change('tab', 'augments');
@@ -83,7 +86,7 @@ const app = create({
   const secondFlow = { ...guide, id: 'second-flow', title: '另一流派', playstyle_name: '另一流派', basic_sections: [{ title: '另一操作', body: '独立操作条件' }], recommendations: [{ id: 'control', priority: 'situational', reason: '第二流派的不同触发条件' }, { id: 'silver', priority: 'alternative', reason: '白银备选' }] };
   const common = { ...guide, id: 'common-basic', title: '通用基础', category: 'basic', recommendations: [{ id: 'control', priority: 'alternative', reason: '通用建议' }] };
   const multiApp = create({
-    read: () => null, write: () => {}, render: value => { last = value; },
+    read: () => ({ favorites: [{ key: 'guides:common-basic', kind: 'guides', id: 'common-basic', name: '旧收藏标题' }], recent: [{ key: 'guides:common-basic', kind: 'guides', id: 'common-basic', name: '旧历史标题' }] }), write: () => {}, render: value => { last = value; },
     async request(path) {
       if (path.includes('patches/latest')) return { version: '16.20' };
       const kind = new URL(path, 'http://local').pathname.split('/').pop();
@@ -121,5 +124,38 @@ const app = create({
   multiApp.enter('detail', { kind: 'champions', id: 'TahmKench', playstyle: 'missing' });
   assert.equal(last.playstyle, '');
   assert.equal(last.heroGuides.length, 2);
+  for (const [sections, heading] of [
+    [[{ title: '基础', body: '操作建议' }], '基础思路'],
+    [[{ title: '避坑：技能', body: '触发限制' }, { title: '版本提示', body: '待核对' }], '机制与避坑'],
+    [[{ title: '基础', body: '操作建议' }, { title: '联动：技能', body: '触发条件' }], '基础思路与机制'],
+    [[{ title: '版本提示', body: '待核对' }], '装备参考']
+  ]) {
+    common.sections = sections;
+    await multiApp.load();
+    const expected = `河流之王：${heading}`;
+    multiApp.enter('mine');
+    assert.equal(last.favorites.find(row => row.id === common.id).name, expected, 'existing favorites use the current display name');
+    assert.equal(last.recent.find(row => row.id === common.id).name, expected, 'existing history uses the current display name');
+    multiApp.enter('search', { query: '通用基础' });
+    const result = last.groups.find(group => group.kind === 'guides').items.find(row => row.id === common.id);
+    assert.equal(result.name, expected);
+    assert.equal(result.title, '通用基础', 'source title remains unchanged');
+    multiApp.enter('detail', { kind: 'guides', id: common.id });
+    assert.equal(last.detail.name, expected);
+    multiApp.toggleFavorite('guides', common.id);
+    multiApp.toggleFavorite('guides', common.id);
+    assert.equal(last.favorites.find(row => row.id === common.id).name, expected);
+  }
+  multiApp.enter('detail', { kind: 'guides', id: guide.id });
+  assert.equal(last.detail.name, guide.title, 'independent playstyle names remain unchanged');
+  common.sections = [{ title: '版本提示', body: '待核对' }];
+  common.stages = [{ label: '装备候选', item_ids: [item.id], reason: '非固定购买顺序' }];
+  await multiApp.load();
+  multiApp.enter('detail', { kind: 'champions', id: 'TahmKench' });
+  assert.equal(last.heroGuideHeading, '装备参考');
+  assert.equal(last.commonBasics[0].name, '河流之王：装备参考');
+  assert.equal(last.commonBasics[0].stages[0].items[0].name, item.name_zh);
+  multiApp.enter('detail', { kind: 'guides', id: common.id });
+  assert.equal(last.detail.readingHeading, '装备参考');
   console.log('PASS: catalog, favorites, skills, failure/retry, preview isolation, multi-flow selection across tabs and refresh, shared augments with separate reasons, common basics, rarity filtering and hero switching');
 })().catch(error => { console.error(error); process.exitCode = 1; });

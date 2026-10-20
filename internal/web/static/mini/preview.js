@@ -31,7 +31,7 @@ function guideState(v, blank) {
   return v.guidesLoading ? empty('玩法加载中') : v.guideError ? empty(`${esc(v.guideError)}${button('retryGuides', '重试')}`) : empty(blank);
 }
 function home(v) {
-  return `<div class="home-heading"><span class="overline">HEXIS / 游戏手册</span><div class="heading-line"><h1 class="page-title">海克斯大乱斗</h1>${button('settings', `<span class="status-dot"></span>${esc(v.patch)}`, '', 'version')}</div></div><a class="search-control" href="#search">${icon('search')}<span>搜索英雄、海克斯、装备与玩法</span>${icon('arrow-up-right')}</a><div class="quick-links"><div><a class="inline-count" href="#guides">${icon('sparkles-active')}<div><strong class="entry-name">玩法手册</strong><span class="entry-meta">联动与出装思路</span></div></a>${link('guides', '')}</div><div><a class="inline-count" href="#items">${icon('backpack-active')}<div><strong class="entry-name">装备速查</strong><span class="entry-meta">${v.counts.items} 件装备</span></div></a>${link('items', '')}</div></div>${section('英雄速查', link('champions', `全部 ${v.counts.champions}`))}<div class="hero-grid">${v.heroes.map(row => `<a class="hero-tile" href="${detailLink(row)}">${avatar(row, 'hero-avatar')}<span>${esc(row.name)}</span><span class="entry-meta">${esc(row.meta)}</span></a>`).join('')}</div>${section('玩法精选', link('guides', '全部玩法'))}${v.featured.length ? v.featured.map(guide).join('') : guideState(v, `${icon('book-open')}暂无已审核玩法`)}${v.recent.length ? `${section('最近查看', link('mine', '查看全部'))}${v.recent.map(entry).join('')}` : ''}<div class="catalog-counts"><span>${v.counts.champions} 英雄</span><span>${v.counts.augments} 海克斯</span><span>${v.counts.items} 装备</span></div>`;
+  return `<div class="home-heading"><span class="overline">HEXIS / 游戏手册</span><div class="heading-line"><h1 class="page-title">海克斯大乱斗</h1>${button('settings', `<span class="status-dot"></span>${esc(v.patch)}`, '', 'version')}</div></div><a class="search-control" href="#search">${icon('search')}<span>搜索英雄、海克斯、装备与玩法</span>${icon('arrow-up-right')}</a><div class="quick-links"><div><a class="inline-count" href="#guides">${icon('sparkles-active')}<div><strong class="entry-name">玩法手册</strong><span class="entry-meta">联动与出装思路</span></div></a>${link('guides', '')}</div><div><a class="inline-count" href="#items">${icon('backpack-active')}<div><strong class="entry-name">装备速查</strong><span class="entry-meta">${v.counts.items} 件装备</span></div></a>${link('items', '')}</div></div>${section('英雄速查', link('champions', `全部 ${v.counts.champions}`))}<div class="hero-grid">${v.heroes.map(row => `<a class="hero-tile" href="${detailLink(row)}">${avatar(row, 'hero-avatar')}<span>${esc(row.name)}</span><span class="entry-meta">${esc(row.meta)}</span></a>`).join('')}</div>${section('玩法精选', link('guides', '全部玩法'))}${v.featured.length ? v.featured.map(guide).join('') : guideState(v, `${icon('book-open')}暂无已审核玩法`)}<div class="catalog-counts"><span>${v.counts.champions} 英雄</span><span>${v.counts.augments} 海克斯</span><span>${v.counts.items} 装备</span></div>`;
 }
 function list(v) {
   const filters = v.mode === 'augments' ? `${rarityFilter(v.filter)}<div class="filter-wrap">${button('change', '全部海克斯', `data-field="linkedOnly" data-value=""`, `chip ${!v.linkedOnly ? 'selected' : ''}`)}${button('change', `有联动 · ${v.linkedAugmentCount}`, 'data-field="linkedOnly" data-value="1"', `chip ${v.linkedOnly ? 'selected' : ''}`)}</div>${v.guidesLoading || v.guideError ? guideState(v, '') : ''}` : v.mode === 'items' ? `<div class="filter-wrap">${['', '攻击', '法术', '防御', '功能', '鞋子', '消耗品', '其他'].map(text => button('change', text || '全部', `data-field="filter" data-value="${text}"`, `chip ${v.filter === text ? 'selected' : ''}`)).join('')}${button('change', `${icon('arrow-down-up')}<span>${v.sort === 'price' ? '按价格' : '按名称'}</span>`, `data-field="sort" data-value="${v.sort === 'price' ? 'name' : 'price'}"`, 'sort-control')}</div>` : '';
@@ -41,17 +41,29 @@ function searchPage(v) {
   return `${search(v)}${!v.query ? `${section('最近搜索')}<div class="filter-wrap">${v.searches.map(text => button('change', esc(text), `data-field="query" data-value="${esc(text)}"`, 'chip')).join('') || '<p class="body-copy">暂无搜索记录</p>'}</div>` : !v.groups.length ? empty('没有找到匹配资料') : v.groups.map(group => `${section(group.title, `<span class="muted">${group.count} 条</span>`)}<div class="catalog-layout">${group.items.map(entry).join('')}</div>${group.count > 20 ? link(group.kind, '查看全部', 'text-action', v.query) : ''}`).join('')}`;
 }
 function mine(v) {
-  return `<div class="personal-heading">${avatar({ icon_url: './assets/bookmark-active.png' }, 'personal-icon')}<div><h2 class="section-title">我的手册</h2><p class="body-copy">${v.favoritesCount} 项收藏 · 本机保存</p></div>${button('settings', icon('info'), 'title="资料与版本"', 'icon-button')}</div>${section('收藏')}${v.favorites.length ? v.favorites.map(entry).join('') : empty('暂无收藏')}${section('最近查看', button('clear', icon('trash-2'), 'title="清除最近查看"', 'icon-button'))}${v.recent.length ? v.recent.map(entry).join('') : empty('暂无查看记录')}${button('settings', `<span>资料与版本</span><span>${esc(v.patch)}</span>${icon('chevron-right')}`, '', 'source-line')}`;
+  return `<div class="personal-heading">${avatar({ icon_url: './assets/bookmark-active.png' }, 'personal-icon')}<div><h2 class="section-title">我的手册</h2><p class="body-copy">${v.favoritesCount} 项收藏 · 本机保存</p></div>${button('settings', icon('info'), 'title="资料与版本"', 'icon-button')}</div>${section('收藏')}${v.favorites.length ? v.favorites.map(row => `<div class="favorite-row"><div class="favorite-entry">${entry(row)}</div>${button('favorite', icon('bookmark-active'), `data-kind="${esc(row.kind)}" data-id="${esc(row.id)}" title="取消收藏" aria-label="取消收藏${esc(row.name)}"`, 'icon-button is-saved')}</div>`).join('') : empty('暂无收藏')}${section('最近查看', button('clear', icon('trash-2'), 'title="清除最近查看"', 'icon-button'))}${v.recent.length ? v.recent.map(entry).join('') : empty('暂无查看记录')}${button('settings', `<span>资料与版本</span><span>${esc(v.patch)}</span>${icon('chevron-right')}`, '', 'source-line')}`;
+}
+function guideContent(g, inline = false) {
+  const summary = g.introSummary ? `<p class="effect-body">${esc(g.introSummary)}</p>` : '';
+  const intro = inline ? summary : (summary || g.heroes.length ? `<div class="guide-intro">${summary}${g.heroes.length ? tokens(g.heroes) : ''}</div>` : '');
+  return `${intro}${g.readingSections.length ? `${inline ? '' : section(esc(g.readingHeading))}${g.readingSections.map(s => `<div class="basic-section"><h3 class="band-label">${esc(s.title)}</h3><p class="effect-body">${esc(s.body)}</p></div>`).join('')}` : ''}${g.augmentChoices.length ? `${section('海克斯搭配')}${g.augmentChoices.map(augment => `<div class="augment-choice"><a class="entry" href="${detailLink(augment)}">${avatar(augment)}<span class="entry-copy"><span class="overline">${esc(augment.priority)}</span><strong class="entry-name">${esc(augment.name)}</strong></span>${icon('chevron-right', 'chevron')}</a>${augment.displayReason ? `<p class="effect-body">${esc(augment.displayReason)}</p>` : ''}</div>`).join('')}` : ''}${g.category !== 'basic' || g.stages.length ? `${section('装备选择')}${g.stages.length ? g.stages.map(stage => `<div class="guide-band"><span class="band-label">${esc(stage.label)}</span>${tokens(stage.items)}<p class="body-copy">${esc(stage.reason)}</p></div>`).join('') : empty('配套装备待补充')}` : ''}${g.versionNotes.length ? `<div class="version-notes"><h3 class="band-label">版本提示</h3>${g.versionNotes.map(note => `<p class="body-copy">${esc(note.body)}</p>`).join('')}</div>` : ''}`;
+}
+function basicNotes(g, v) {
+  const open = v.basicSourceOpen === g.id;
+  const references = [{ name: '查看来源', url: g.source?.url }, ...g.references];
+  const sources = open ? `<span class="body-copy">${esc(g.source?.name || '暂无来源')}</span>${references.filter(ref => safeURL(ref.url)).map(ref => `<a class="text-action" href="${esc(safeURL(ref.url))}" target="_blank" rel="noopener noreferrer">${esc(ref.name)}${icon('arrow-up-right')}</a>`).join('')}` : '';
+  return `<div class="basic-notes">${guideContent(g, true)}${button('change', `<span>资料来源</span>${icon(open ? 'x' : 'chevron-right')}`, `data-field="basicSourceOpen" data-value="${open ? '' : esc(g.id)}" aria-expanded="${open}"`, 'source-line basic-source')}${sources}</div>`;
 }
 function hero(v) {
   const skillContent = v.skillsOpen ? `<div class="skills">${v.skillsLoading ? empty('技能加载中') : v.skillsError ? empty(`${v.skillsError}${button('skills-retry', '重试')}`) : (v.skills?.skills || []).map(skill => `<div class="skill">${avatar(skill)}<div><strong class="entry-name">${esc(skill.key)} · ${esc(skill.name)}</strong><p class="body-copy">${esc(skill.description)}</p></div></div>`).join('')}${v.skills ? `<span class="source-caption">Data Dragon ${esc(v.skills.version)} · 技能数值及模式调整以游戏内为准</span>` : ''}</div>` : '';
-  const content = v.guidesLoading || v.guideError ? guideState(v, '') : `${v.heroGuides.length ? v.heroGuides.map(guide).join('') : empty('该英雄暂无已审核的趣味玩法')}${v.commonBasics.length ? `${section('英雄通用基础')}${v.commonBasics.map(guide).join('')}` : ''}`;
-  return `${button('skills', `${icon('swords')}<span>英雄技能</span>${icon(v.skillsOpen ? 'x' : 'chevron-right')}`, `aria-expanded="${v.skillsOpen}"`, 'source-line skill-toggle')}${skillContent}${section('英雄玩法', v.playstyle ? button('change', `全部玩法${icon('chevron-right')}`, 'data-field="playstyle" data-value=""') : '')}${content}<div class="detail-links">${link('augments', '全部海克斯')}${link('items', '装备速查')}</div>`;
+  const allPlaystyles = v.playstyle ? button('change', `全部玩法${icon('chevron-right')}`, 'data-field="playstyle" data-value=""') : '';
+  const content = v.guidesLoading || v.guideError ? guideState(v, '') : `${v.commonBasics.map(g => basicNotes(g, v)).join('')}${v.commonBasics.length && v.heroGuides.length ? section('英雄玩法', allPlaystyles) : ''}${v.heroGuides.map(guide).join('')}${v.heroGuideNotice ? (v.commonBasics.length ? `<p class="source-caption">${esc(v.heroGuideNotice)}</p>` : empty(esc(v.heroGuideNotice))) : ''}`;
+  return `${button('skills', `${icon('swords')}<span>英雄技能</span>${icon(v.skillsOpen ? 'x' : 'chevron-right')}`, `aria-expanded="${v.skillsOpen}"`, 'source-line skill-toggle')}${skillContent}${section(v.heroGuideHeading, v.commonBasics.length ? '' : allPlaystyles)}${content}<div class="detail-links">${link('augments', '全部海克斯')}${link('items', '装备速查')}</div>`;
 }
 function detail(v) {
   const row = v.detail;
   if (!row) return empty('当前版本未收录该资料');
-  const heading = `<div class="detail-heading ${v.kind === 'guides' ? 'guide-heading' : ''}">${avatar(row, 'detail-avatar')}<div class="detail-copy"><span class="overline">${({ champions: '英雄档案', augments: '强化符文', items: '装备档案', guides: '编辑玩法' })[v.kind]} / ${esc(v.patch)}</span><h1 class="detail-title">${esc(row.name)}</h1><span class="body-copy">${esc(v.skills ? `${v.skills.title} · ${v.skills.roles.join(' / ')}` : row.meta)}</span></div>${button('favorite', icon(row.saved ? 'bookmark-active' : 'bookmark'), `data-kind="${v.kind}" data-id="${esc(v.id)}" title="${row.saved ? '取消收藏' : '收藏'}" aria-pressed="${row.saved}"`, `icon-button ${row.saved ? 'is-saved' : ''}`)}</div>`;
+  const heading = `<div class="detail-heading ${v.kind === 'guides' ? 'guide-heading' : ''}">${avatar(row, 'detail-avatar')}<div class="detail-copy"><span class="overline">${v.kind === 'guides' && row.category === 'basic' ? '英雄基础' : ({ champions: '英雄档案', augments: '强化符文', items: '装备档案', guides: '编辑玩法' })[v.kind]} / ${esc(v.patch)}</span><h1 class="detail-title">${esc(row.name)}</h1><span class="body-copy">${esc(v.skills ? `${v.skills.title} · ${v.skills.roles.join(' / ')}` : row.meta)}</span></div>${button('favorite', icon(row.saved ? 'bookmark-active' : 'bookmark'), `data-kind="${v.kind}" data-id="${esc(v.id)}" title="${row.saved ? '取消收藏' : '收藏'}" aria-pressed="${row.saved}"`, `icon-button ${row.saved ? 'is-saved' : ''}`)}</div>`;
   let body = '';
   if (v.kind === 'champions') body = hero(v);
   if (v.kind === 'augments' || v.kind === 'items') {
@@ -60,12 +72,13 @@ function detail(v) {
     else body += `${section('联动英雄', `<span class="muted">${v.relatedHeroes.length} 位实例</span>`)}${v.relatedExamples.length ? v.relatedExamples.map(heroExample).join('') : guideState(v, '该海克斯的英雄实例待补充')}${v.moreRelatedExamples ? button('change', '展开全部英雄实例', 'data-field="examplesExpanded" data-value="1"') : ''}${section('关联玩法', `<span class="muted">${v.relatedGuides.length} 条</span>`)}${v.relatedGuides.length ? v.relatedGuides.map(guide).join('') : guideState(v, '该海克斯的关联玩法待补充')}${!v.relatedGuides.length ? `<a class="text-action" href="#augments?linkedOnly=1">查看已有联动的海克斯${icon('chevron-right')}</a>` : ''}`;
   }
   if (v.kind === 'guides') {
-    const g = v.guideDetail;
-    body = `<div class="guide-intro"><p class="effect-body">${esc(g.summary)}</p>${g.heroes.length ? tokens(g.heroes) : ''}</div>${g.readingSections.length ? `${section('怎么玩')}${g.readingSections.map(s => `<div class="basic-section"><h3 class="band-label">${esc(s.title)}</h3><p class="effect-body">${esc(s.body)}</p></div>`).join('')}` : ''}${g.augmentChoices.length ? `${section('海克斯搭配')}${g.augmentChoices.map(augment => `<div class="augment-choice"><a class="entry" href="${detailLink(augment)}">${avatar(augment)}<span class="entry-copy"><span class="overline">${esc(augment.priority)}</span><strong class="entry-name">${esc(augment.name)}</strong></span>${icon('chevron-right', 'chevron')}</a>${augment.reason ? `<p class="effect-body">${esc(augment.reason)}</p>` : ''}</div>`).join('')}` : ''}${g.category !== 'basic' || g.stages.length ? `${section('装备选择')}${g.stages.length ? g.stages.map(stage => `<div class="guide-band"><span class="band-label">${esc(stage.label)}</span>${tokens(stage.items)}<p class="body-copy">${esc(stage.reason)}</p></div>`).join('') : empty('配套装备待补充')}` : ''}${g.versionNotes.length ? `<div class="version-notes"><h3 class="band-label">版本提示</h3>${g.versionNotes.map(note => `<p class="body-copy">${esc(note.body)}</p>`).join('')}</div>` : ''}`;
+    body = guideContent(v.guideDetail);
   }
   let url;
   try { const parsed = new URL(v.source.url); if (['http:', 'https:'].includes(parsed.protocol)) url = parsed.href; } catch (_) {}
-  return `${heading}<div class="detail-content">${body}<div class="source-footer"><span class="overline">资料来源</span><span class="body-copy">${esc(v.source.name)}</span>${v.source.attribution ? `<span class="body-copy">${esc(v.source.attribution)}</span>` : ''}${url ? `<a class="text-action" href="${esc(url)}" target="_blank" rel="noopener noreferrer">查看来源${icon('arrow-up-right')}</a>` : ''}${(v.guideDetail?.references || []).map(ref => safeURL(ref.url) ? `<a class="text-action" href="${esc(safeURL(ref.url))}" target="_blank" rel="noopener noreferrer">${esc(ref.name)}${icon('arrow-up-right')}</a>${ref.note ? `<span class="body-copy">${esc(ref.note)}</span>` : ''}` : '').join('')}</div></div>`;
+  const sourceToggle = button('change', `<span>资料来源</span>${icon(v.sourceOpen ? 'x' : 'chevron-right')}`, `data-field="sourceOpen" data-value="${v.sourceOpen ? '' : '1'}" aria-expanded="${!!v.sourceOpen}"`, 'source-line');
+  const sourceContent = v.sourceOpen ? `<span class="body-copy">${esc(v.source.name)}</span>${url ? `<a class="text-action" href="${esc(url)}" target="_blank" rel="noopener noreferrer">查看来源${icon('arrow-up-right')}</a>` : ''}${(v.guideDetail?.references || []).map(ref => safeURL(ref.url) ? `<a class="text-action" href="${esc(safeURL(ref.url))}" target="_blank" rel="noopener noreferrer">${esc(ref.name)}${icon('arrow-up-right')}</a>` : '').join('')}` : '';
+  return `${heading}<div class="detail-content">${body}<div class="source-footer">${sourceToggle}${sourceContent}</div></div>`;
 }
 function render(v) {
   const active = document.activeElement;
@@ -79,13 +92,18 @@ function render(v) {
   if (focused) { const input = document.querySelector('#query'); input?.focus(); if (cursor != null) { try { input.setSelectionRange(cursor, cursor); } catch (_) {} } }
 }
 let toastTimer;
+const cachedRequest = HexisDataCache.create(JSON.stringify([location.origin, new URLSearchParams(location.search).get('guides') === 'preview']), async path => {
+  const response = await fetch(path);
+  if (!response.ok) throw new Error(response.status === 404 ? '暂无对应版本资料' : '资料加载失败，请重试');
+  return response.json();
+});
 const app = HexisCore.create({
   previewGuides: new URLSearchParams(location.search).get('guides') === 'preview',
   read: key => { try { return JSON.parse(localStorage.getItem(key)); } catch (_) { return null; } },
   write: (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {} },
   notice: message => { const toast = document.querySelector('#toast'); toast.textContent = message; toast.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { toast.hidden = true; }, 2000); },
   render,
-  request: async path => { const response = await fetch(path); if (!response.ok) throw new Error(response.status === 404 ? '暂无对应版本资料' : '资料加载失败，请重试'); return response.json(); }
+  request: cachedRequest
 });
 function navigate() {
   const [mode, query] = location.hash.slice(1).split('?');
@@ -107,13 +125,13 @@ document.addEventListener('click', async event => {
   else if (d.action === 'favorite') app.toggleFavorite(d.kind, d.id);
   else if (d.action === 'skills') app.skills();
   else if (d.action === 'skills-retry') { await app.skills(); app.skills(); }
-  else if (d.action === 'retry') app.load();
+  else if (d.action === 'retry') { cachedRequest.invalidate(); app.load(); }
   else if (d.action === 'retryGuides') app.retryGuides();
   else if (d.action === 'back') { if (history.length > 1) history.back(); else location.hash = 'home'; }
   else if (d.action === 'clear') { if (confirm('清除最近查看和搜索记录？收藏内容会保留。')) app.clearRecent(); }
   else if (d.action === 'missing') { const toast = document.querySelector('#toast'); toast.textContent = '当前版本未收录'; toast.hidden = false; setTimeout(() => { toast.hidden = true; }, 2000); }
   else if (d.action === 'close-dialog') document.querySelector('#info').close();
-  else if (d.action === 'settings') { document.querySelector('#info-content').innerHTML = `<span class="version"><span class="status-dot"></span>版本 ${esc(app.view().patch)}</span><p class="body-copy">图鉴来自 Riot Data Dragon 与 CommunityDragon。玩法仅展示已审核的编辑内容。</p><p class="body-copy">收藏与查看记录保存在当前设备。</p>`; document.querySelector('#info').showModal(); }
+  else if (d.action === 'settings') { const v = app.view(); document.querySelector('#info-content').innerHTML = `<span class="version"><span class="status-dot"></span>版本 ${esc(v.patch)}</span><p class="body-copy">图鉴来自 Riot Data Dragon 与 CommunityDragon。${esc(v.guideStatusText)}</p><p class="body-copy">收藏与查看记录保存在当前设备。</p>`; document.querySelector('#info').showModal(); }
 });
 navigate();
 app.load();

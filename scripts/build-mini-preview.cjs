@@ -12,6 +12,7 @@ for (const mode of ['home', 'champions', 'augments', 'items', 'mine', 'detail', 
   fs.writeFileSync(path.join(dir, 'index.json'), '{ "usingComponents": {} }\n');
 }
 fs.copyFileSync(path.join(native, 'lib/core.js'), path.join(preview, 'core.js'));
+fs.copyFileSync(path.join(native, 'lib/data-cache.js'), path.join(preview, 'data-cache.js'));
 const css = fs.readFileSync(path.join(native, 'app.wxss'), 'utf8').replace(/(^|\n)page\{/, '$1body{');
 fs.writeFileSync(path.join(preview, 'native.css'), css.replace(/(^|})([^{}]+)\{/g, (_, start, selector) => start + selector.replace(/(?<![\w.-])(view|text|image)(?![\w-])/g, tag => ({ view: 'div', text: 'span', image: 'img' })[tag]) + '{'));
 if (fs.existsSync(path.join(native, 'assets'))) fs.cpSync(path.join(native, 'assets'), path.join(preview, 'assets'), { recursive: true });

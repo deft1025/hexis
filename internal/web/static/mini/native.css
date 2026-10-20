@@ -56,4 +56,6 @@ div,span,button,input{box-sizing:border-box}button{font:inherit;margin:0;padding
 .version-notes{margin-top:24px;padding:16px 0;border-top:1px solid #d1dcd9}
 .version-notes .band-label{color:#86632a}
 .detail-title,.section-title,.entry-name,.effect-body,.body-copy{overflow-wrap:anywhere}
+.favorite-row{display:flex;align-items:center;gap:12px}.favorite-entry{flex:1;min-width:0}.favorite-row>.icon-button{flex:none}
+.basic-notes{padding-bottom:8px}.basic-notes .basic-section:first-child{padding-top:0}.basic-notes .version-notes{margin-top:16px}.basic-source{font-size:11px;color:#667973}.basic-notes>.text-action{margin:12px 0}.basic-notes>.body-copy{font-size:11px}
 @media(max-width:350px){.home-heading{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}}

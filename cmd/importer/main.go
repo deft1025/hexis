@@ -51,6 +51,18 @@ func main() {
 		if err := runStatus(cfg, os.Args[2:]); err != nil {
 			log.Fatal(err)
 		}
+	case "backup-guides":
+		if err := runBackupGuides(cfg, os.Args[2:]); err != nil {
+			log.Fatal(err)
+		}
+	case "repair-augment-descriptions":
+		if err := runRepairAugmentDescriptions(cfg, os.Args[2:]); err != nil {
+			log.Fatal(err)
+		}
+	case "import-guide-batch":
+		if err := runGuideBatch(cfg, os.Args[2:]); err != nil {
+			log.Fatal(err)
+		}
 	case "import":
 		if err := runImport(cfg, os.Args[2:]); err != nil {
 			log.Fatal(err)
@@ -251,6 +263,8 @@ func runStatus(cfg *config.Config, args []string) error {
 		(SELECT COUNT(*) FROM augment_patch_profiles WHERE patch_id = p.id),
 		(SELECT COUNT(*) FROM item_patch_profiles WHERE patch_id = p.id),
 		(SELECT COUNT(*) FROM champion_patch_skills WHERE patch_id = p.id),
+		(SELECT COUNT(*) FROM gameplay_guides WHERE patch_id = p.id),
+		(SELECT COUNT(*) FROM gameplay_guide_previews WHERE patch_id = p.id),
 		(SELECT COUNT(*) FROM champion_patch_stats WHERE patch_id = p.id),
 		(SELECT COUNT(*) FROM augment_patch_stats WHERE patch_id = p.id),
 		(SELECT COUNT(*) FROM champion_combo_stats WHERE patch_id = p.id)
@@ -259,14 +273,14 @@ func runStatus(cfg *config.Config, args []string) error {
 		return err
 	}
 	defer rows.Close()
-	fmt.Println("patch\tstatus\tchampions\taugments\titems\tskill_sets\tchampion_stats\taugment_stats\tcombos")
+	fmt.Println("patch\tstatus\tchampions\taugments\titems\tskill_sets\tguides\tguide_previews\tchampion_stats\taugment_stats\tcombos")
 	for rows.Next() {
 		var version, status string
-		var champions, augments, items, skillSets, championStats, augmentStats, combos int
-		if err := rows.Scan(&version, &status, &champions, &augments, &items, &skillSets, &championStats, &augmentStats, &combos); err != nil {
+		var champions, augments, items, skillSets, guides, guidePreviews, championStats, augmentStats, combos int
+		if err := rows.Scan(&version, &status, &champions, &augments, &items, &skillSets, &guides, &guidePreviews, &championStats, &augmentStats, &combos); err != nil {
 			return err
 		}
-		fmt.Printf("%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", version, status, champions, augments, items, skillSets, championStats, augmentStats, combos)
+		fmt.Printf("%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", version, status, champions, augments, items, skillSets, guides, guidePreviews, championStats, augmentStats, combos)
 	}
 	return rows.Err()
 }
@@ -384,6 +398,10 @@ func usage() {
   go run ./cmd/importer sync --version 16.21.1
   go run ./cmd/importer fetch --version 16.20.1
   go run ./cmd/importer status
+  go run ./cmd/importer backup-guides --patch 16.20 --out data/16.20/backups/guides.json
+  go run ./cmd/importer repair-augment-descriptions --dir data/16.20 --out data/16.20/backups/augment-descriptions-plan.json
+  go run ./cmd/importer import-guide-batch --file data/16.20/guide-expansion/batch.json
+  go run ./cmd/importer import-guide-batch --file data/16.20/guide-expansion/batch.json --apply
   go run ./cmd/importer backfill-skills --version 16.20.1
   go run ./cmd/importer import --patch 15.21 --kind champions --file ./champions.json
   go run ./cmd/importer import --patch 15.21 --kind augments --file ./augments.json

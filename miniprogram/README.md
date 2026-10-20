@@ -5,11 +5,58 @@
 ## 运行
 
 1. 在项目根目录运行 `go run ./cmd/importer migrate`，为现有数据库增量创建装备、玩法和技能表。首次导入使用 `sync --version <固定版本>`，浏览时从数据库读取资料。
-2. 启动后端 `go run ./cmd/api`。
+2. 本地预览启动后端 `HTTP_ADDR=127.0.0.1:8196 GUIDE_PREVIEW_ENABLED=1 go run ./cmd/api`。已有数据库无需重新迁移或导入。
 3. 微信开发者工具导入本目录。项目已配置小程序 AppID，上传前确认它与目标小程序后台一致，并使用有开发权限的微信账号登录。
-4. `app.js` 的 `globalData.apiBase` 当前为正式接口 `https://hexis.xuninfo.top`，项目已开启域名校验。小程序后台的 request 合法域名需添加该地址。本地联调时可临时改为 `http://127.0.0.1:8182` 并在开发者工具中关闭域名校验，上传前恢复正式配置。
+4. `app.js` 在开发版且运行于开发者工具模拟器时自动连接 `http://127.0.0.1:8196` 并启用玩法预览。本机 `project.private.config.json` 已关闭域名校验，点击「编译」即可查看。真机、体验版和正式版使用 `https://hexis.xuninfo.top`，不启用预览；小程序后台的 request 合法域名需添加该 HTTPS 地址。
 
-浏览器预览：`http://127.0.0.1:8182/mini/`。预览不是 web-view 小程序；两端共用 `lib/core.js` 的资料、搜索、筛选、分页、收藏和联动逻辑，微信端使用 WXML/WXSS 渲染。
+浏览器预览：`http://127.0.0.1:8196/mini/?guides=preview`。预览不是 web-view 小程序；两端共用 `lib/core.js` 的资料、搜索、筛选、分页、收藏和联动逻辑，微信端使用 WXML/WXSS 渲染。
+
+## 本地与线上 API 切换
+
+配置入口为 [`app.js`](app.js)。当前采用自动选择：
+
+| 运行环境 | API 地址 | `previewGuides` |
+| --- | --- | --- |
+| 开发版 + 开发者工具模拟器 | `http://127.0.0.1:8196` | `true` |
+| 开发版真机、体验版、正式版 | `https://hexis.xuninfo.top` | `false` |
+
+### 开发者工具也使用线上
+
+`globalData` 默认已是线上地址，但 `onLaunch` 会在模拟器里将其覆盖为本地。因此只改默认地址不会生效；需要移除 `onLaunch` 中的本地覆盖逻辑。按当前文件结构，切换后的完整内容为：
+
+```js
+App({
+  globalData: {
+    apiBase: 'https://hexis.xuninfo.top',
+    previewGuides: false
+  }
+});
+```
+
+保存后在开发者工具点击「编译」，让启动配置重新生效并重新加载资料。确认网络面板中的请求指向 `https://hexis.xuninfo.top/api/v1/`，玩法请求不带 `preview=1`。小程序后台需将 `https://hexis.xuninfo.top` 添加到 request 合法域名，并在开发者工具启用域名校验（本机 `project.private.config.json` 的 `setting.urlCheck` 设为 `true`）。
+
+### 恢复本地预览
+
+保留上述线上默认配置，在 `App` 对象中恢复以下 `onLaunch`：
+
+```js
+onLaunch() {
+  const localPreview = wx.getAccountInfoSync().miniProgram.envVersion === 'develop' &&
+    wx.getDeviceInfo().platform === 'devtools';
+  if (localPreview) {
+    this.globalData.apiBase = 'http://127.0.0.1:8196';
+    this.globalData.previewGuides = true;
+  }
+}
+```
+
+从项目根目录启动本地后端 `HTTP_ADDR=127.0.0.1:8196 GUIDE_PREVIEW_ENABLED=1 go run ./cmd/api`；若该端口已有本项目服务，无需重复启动。在本机 `project.private.config.json` 中将 `setting.urlCheck` 设为 `false`，重新编译。确认请求指向 `127.0.0.1:8196/api/v1/`，玩法请求包含 `preview=1`。此模式只覆盖开发者工具模拟器，真机不能通过该回环地址访问电脑上的服务。
+
+### 数据与生效范围
+
+API 地址与玩法预览是两个独立配置。预览需要客户端 `previewGuides: true` 和后端 `GUIDE_PREVIEW_ENABLED=1` 同时开启；线上保持正式模式，不能靠切地址或开启预览代替审核。按 2026-10-19 的核查，预览表有 284 条记录，正式玩法表尚无已审核记录，所以切到线上正式模式后，玩法、基础思路及其关联可能为空；这不代表预览数据被删除。实际数量以目标环境接口或导入器 `status` 为准。
+
+切换客户端 API 不会导入、迁移或发布数据库内容，也不会部署后端。浏览器预览不读取小程序 `app.js`，而是请求当前网页所在域名的 API；本地浏览器预览地址仍为 `http://127.0.0.1:8196/mini/?guides=preview`，去掉 `guides=preview` 则使用正式玩法接口。
 
 ## 上线发布
 
@@ -24,7 +71,7 @@
 
 ## 功能
 
-- 首页：跨英雄、海克斯、装备、玩法搜索；英雄速查；已审核玩法；最近查看；版本与来源。
+- 首页：跨英雄、海克斯、装备、玩法搜索；英雄速查；已审核玩法；版本与来源。最近查看仅保留在“我的”。
 - 英雄：名称、英文名、常见别称搜索；分页；英雄技能；独立玩法卡片与通用基础入口。
 - 海克斯：效果搜索、稀有度筛选、详情、通过已审核玩法关联英雄与装备。
 - 装备：分类、价格排序、完整效果、总价、卖价、合成配方；配方中未收录的部件不会错误跳转。
@@ -36,7 +83,7 @@
 
 静态图鉴接口接现有 MySQL 的版本资料。玩法来自新表 `gameplay_guides`，当前没有凭截图生成或未经审核的推荐记录，因此没有内容时显示“暂无已审核玩法”。英雄联动与装备建议不从全局胜率推导。
 
-开发版用于看内容样例时，自动请求独立的 `gameplay_guide_previews` 表，需本地后端启用 `GUIDE_PREVIEW_ENABLED=1`。六位英雄的十条改写样例见 `../docs/guide-previews/README.md`；界面标为“样例待核对”。体验版和正式版仍读取已审核玩法。
+开发者工具模拟器读取独立的 `gameplay_guide_previews` 表，需要本地后端启用 `GUIDE_PREVIEW_ENABLED=1`。2026-10-20 补全 50 位英雄漏提取的装备清单后，已有 293 条预览记录（124 条趣味玩法、169 条基础），覆盖 172 位英雄，详见 `../docs/guide-expansion/README.md`；界面仍标为“样例待核对”。基础内容和装备参考在英雄详情查看，不全部出现在玩法手册中。装备清单保留适用流派和海克斯条件，不代表固定购买顺序或完整操作攻略。真机、体验版和正式版读取已审核玩法，始终禁用预览。
 
 英雄详情按独立玩法展示卡片，英雄通用基础另列，不再分成三个切换栏目。每张卡片进入自身玩法详情，操作、海克斯理由、装备均来自本条记录。海克斯反向进入英雄的指定玩法时保留选择，可通过“全部玩法”恢复列表。玩法详情合并同一条记录中的海克斯展示，保留每条玩法自己的理由与版本提示。
 
@@ -48,13 +95,16 @@
 
 ## 开发与检查
 
+各页面共用 `lib/data-cache.js` 的内存缓存和进行中的 API 请求，搜索、筛选、页码等页面状态独立。缓存按 API 地址、预览/正式模式和含补丁的请求路径隔离；版本检查有效期 1 分钟，图鉴、玩法与技能响应 5 分钟。首次仍加载完整资料，随后新页面在缓存有效期内不重复下载；下拉刷新和整页重试会强制重新获取，返回已有页面时检查版本缓存是否过期。失败响应不缓存。当前没有把图鉴写入本机持久存储，不提供离线浏览；浏览器刷新后也需重新加载。
+
 ```bash
 node scripts/build-mini-preview.cjs
 node scripts/test-mini-core.cjs
 node scripts/test-mini-relations.cjs
+node scripts/test-mini-cache.cjs
 go test ./...
 ```
 
-以上命令从项目根目录执行。修改 `lib/core.js`、`app.wxss` 或本机图标后重新构建预览，再重启 Go 服务，嵌入资源才会更新。Lucide PNG 图标保留原许可证于 `assets/LICENSE`。
+以上命令从项目根目录执行。修改 `lib/core.js`、`lib/data-cache.js`、`app.wxss` 或本机图标后重新构建预览，再重启 Go 服务，嵌入资源才会更新。Lucide PNG 图标保留原许可证于 `assets/LICENSE`。
 
 WXML/WXSS 已通过本机微信编译器验证；真机登录、分享与正式发布仍需自己的 AppID 和部署地址。
